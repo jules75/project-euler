@@ -1,8 +1,8 @@
 (ns euler.core)
 
-(defn any-multiple?
+(defn any-divisible?
 	[n coll]
-	"True if n is a multiple of ANY number in coll"
+	"True if n is evenly divisible by ANY integer in coll"
 	(some zero? (map #(rem n %) coll)))
 	
 (defn palindrome?
@@ -35,7 +35,7 @@
 
 (defn p1 []
 	(reduce + 
-		(filter #(any-multiple? % [3 5]) (range 1000))))
+		(filter #(any-divisible? % [3 5]) (range 1000))))
 
 (defn p2 []
 	(->> (take-while #(< % 4000000) (fibonacci))
@@ -48,5 +48,10 @@
 (defn p4 []
 	(->> (for [a (range 1 1000) b (range 1 1000)] (* a b))
 		(filter palindrome?)
-		(apply max)
-		))
+		(apply max)))
+		
+(defn p5 []
+	(->> (map #(frequencies (factor %)) (range 2 21))
+		(reduce #(merge-with max % %2))
+		(map #(repeat (val %) (key %)))
+		flatten (apply *')))
