@@ -55,3 +55,10 @@
 		(reduce #(merge-with max % %2))
 		(map #(repeat (val %) (key %)))
 		flatten (apply *')))
+		
+(defn p6 []
+	(let [r (range 101) 
+		sq (fn [n] (* n n))
+		a (sq (apply + r))
+		b (apply + (map sq r))]
+		(bigint (- a b))))
