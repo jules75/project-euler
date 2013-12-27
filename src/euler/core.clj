@@ -19,14 +19,14 @@
 		(iterate #(vector (last %) (+' (first %) (last %))))
 		(map first)))
 		
-(defn factor
+(defn factor	; TODO improve performance
 	([n m factors]
 	"Recursively test is m is factor of n, add to list of factors"
 	(if (> m (Math/sqrt n))
 		(conj factors n)
 		(if (zero? (rem n m))
 			(recur (/ n m) m (conj factors m))
-			(recur n (inc m) factors)	; TODO improve performance
+			(recur n (if (= 2 m) 3 (+ 2 m)) factors)
 		)))
 	([n]
 	"Return list of factors of n"
@@ -97,6 +97,7 @@
 (defn p9 []	; TODO very slow
 	(let [r (range 1 500)]
 		(for [a r b r c r :when (and (pythagorean? a b c) (= 1000 (+ a b c)))]
-			(* a b c)
-			)))
+			(* a b c))))
 
+(defn p10 [] ; TODO very slow
+	(apply + (take-while #(< % 2000000) (primes))))
