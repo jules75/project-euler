@@ -31,6 +31,16 @@
 	([n]
 	"Return list of factors of n"
 	(factor n 2 [])))
+
+(defn sq
+	[n]
+	"Square n"
+	(* n n))
+
+(defn pythagorean?
+	[a b c]
+	"True if aa+bb=cc and a<b<c"
+	(and (< a b c) (= (sq c) (+ (sq a) (sq b)))))
 	
 (defn prime?
 	[n]
@@ -70,7 +80,6 @@
 		
 (defn p6 []
 	(let [r (range 101) 
-		sq (fn [n] (* n n))
 		a (sq (apply + r))
 		b (apply + (map sq r))]
 		(bigint (- a b))))
@@ -85,5 +94,9 @@
 			(map #(Integer/parseInt (str %)))
 			(apply *)))))
 			
-
+(defn p9 []	; TODO very slow
+	(let [r (range 1 500)]
+		(for [a r b r c r :when (and (pythagorean? a b c) (= 1000 (+ a b c)))]
+			(* a b c)
+			)))
 
