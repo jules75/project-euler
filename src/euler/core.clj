@@ -12,7 +12,7 @@
 	
 (defn fibonacci
 	[]
-	"Return infinite terms of fibonacci series"
+	"Returns infinite terms of fibonacci series"
 	(->> [0 1]
 		(iterate #(vector (last %) (+' (first %) (last %))))
 		(map first)))
@@ -29,6 +29,16 @@
 	([n]
 	"Return list of factors of n"
 	(factor n 2 [])))
+	
+(defn prime?
+	[n]
+	"True if integer is prime"
+	(= 1 (count (factor n))))
+	
+(defn primes
+	[]
+	"Returns infinite sequence of primes"
+	(cons 2 (filter prime? (iterate #(+ 2 %) 3))))
 
 
 ;; solutions
@@ -62,3 +72,6 @@
 		a (sq (apply + r))
 		b (apply + (map sq r))]
 		(bigint (- a b))))
+		
+(defn p7 []
+	(nth (primes) 10000))
