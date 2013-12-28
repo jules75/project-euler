@@ -60,6 +60,15 @@
 	"Returns number of divisors for n, uses factor counting method"
 	(->> (factor n) frequencies (map last) (map inc) (apply *)))
 	
+(defn collatz
+	[n]
+	"Returns Collatz sequence starting with given integer"
+	(conj
+	(->>
+		(iterate #(if (even? %) (/ % 2) (inc (* 3 %))) n)
+		(take-while #(not= 1 %))
+		vec) 1))
+
 
 ;; solutions
 
@@ -218,4 +227,14 @@
 		20849603980134001723930671666823555245252804609722
 		53503534226472524250874054075591789781264330331690]]
 	(->> (apply +' N) str (take 10) (apply str))
+	))
+
+	
+
+(defn p14 [] ; TODO takes 2 minutes
+	(->>
+	(range 1 1000000)
+	(map #(vector % (count (collatz %))))
+	(reduce #(if (> (last %1) (last %2)) %1 %2))
+	first
 	))
