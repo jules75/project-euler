@@ -69,6 +69,13 @@
 		(take-while #(not= 1 %))
 		vec) 1))
 
+(defn sum-digits
+	[n]
+	"Sum of all digits in n"
+	(->>
+		(str n)
+		(map #(- (int %) (int \0)))
+		(apply +')))
 
 ;; solutions
 
@@ -229,8 +236,6 @@
 	(->> (apply +' N) str (take 10) (apply str))
 	))
 
-	
-
 (defn p14 [] ; TODO takes 2 minutes
 	(->>
 	(range 1 1000000)
@@ -238,3 +243,8 @@
 	(reduce #(if (> (last %1) (last %2)) %1 %2))
 	first
 	))
+
+(defn p15 [] nil) ; TODO to be done
+
+(defn p16 []
+	(sum-digits (reduce * (repeat 1000 2N))))
