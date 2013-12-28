@@ -51,7 +51,17 @@
 	[]
 	"Returns infinite sequence of primes"
 	(cons 2 (filter prime? (iterate #(+ 2 %) 3))))
+	
+(defn triangles
+	[]
+	"Returns infinite sequence of triangle numbers"
+	(->> (map #(/ (* % (dec %)) 2) (range)) rest rest))
 
+(defn count-divisors
+	[n]
+	"Returns number of divisors for n, uses factor counting method"
+	(->> (factor n) frequencies (map last) (map inc) (apply *)))
+	
 
 ;; solutions
 
@@ -101,3 +111,9 @@
 
 (defn p10 [] ; TODO very slow
 	(apply + (take-while #(< % 2000000) (primes))))
+
+(defn p11 [] nil) ; TO BE DONE!
+
+(defn p12 []
+	(first (filter #(< 500 (count-divisors %)) (triangles))))
+
