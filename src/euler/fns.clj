@@ -52,8 +52,15 @@
 	
 (defn triangles
 	[]
-	"Returns infinite sequence of triangle numbers"
-	(->> (map #(/ (* % (dec %)) 2) (range)) rest rest))
+	"Returns infinite sequence of triangle numbers, i.e. 0 1 3 6 10 15 etc."
+	(->> (map #(/ (* % (dec %)) 2) (range)) rest))
+	
+(defn untriangle
+	[n]
+	"Returns reverse of triangle number, i.e.
+		1->2 3->3 6->4 10->5 15->6 etc.
+	If result is whole, n is a triangle number"
+	(->> n (* 8) inc (Math/sqrt) dec (* 0.5)))
 
 (defn count-divisors
 	[n]
@@ -107,3 +114,20 @@
 			(if n-teen n-teen (str n-tens " " n-unit)))
 		clojure.string/trim
 		(clojure.string/replace "  " " "))))
+
+(defn walk-tritree
+	[tritree path]
+	"Walk path from top of triangle tree (see http://projecteuler.net/problem=18)
+	Triangle tree is represented as single depth vector
+	Path: 0=left 1=right, e.g. [0 0 0 1 1 0 1 0 1 0 1]
+	Returns vector of values"
+	(->> (let [r (range (count tritree))
+		child-map (->> r								; number every node
+			(map #(->> (untriangle %) int inc (+ %)))	; find each child index
+			(map #(vector % (inc %)))					; and its neighbour
+			(zipmap r))]								; build map
+		(loop [p path visited [0]]
+			(let [child (get-in child-map [(last visited) (first p)])]
+				(if (seq p) (recur (rest p) (conj visited child)) visited)
+				)))
+				(map #(get tritree %))))
