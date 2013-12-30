@@ -1,131 +1,8 @@
-(ns euler.core)
-
-(defn any-divisible?
-	[n coll]
-	"True if n is evenly divisible by ANY integer in coll"
-	(some zero? (map #(rem n %) coll)))
+(ns euler.p10 
+	(:require [euler.fns :as f]))
 	
-(defn palindrome?
-	[n]
-	"True if integer n is a palindrome"
-	(= n (->> n str reverse (apply str) Integer/parseInt)))
-	
-(defn fibonacci
-	[]
-	"Returns infinite terms of fibonacci series"
-	(->> [0 1]
-		(iterate #(vector (last %) (+' (first %) (last %))))
-		(map first)))
-		
-(defn factor	; TODO improve performance
-	([n m factors]
-	"Recursively test is m is factor of n, add to list of factors"
-	(if (> m (Math/sqrt n))
-		(conj factors n)
-		(if (zero? (rem n m))
-			(recur (/ n m) m (conj factors m))
-			(recur n (if (= 2 m) 3 (+ 2 m)) factors)
-		)))
-	([n]
-	"Return list of factors of n"
-	(factor n 2 [])))
-
-(defn sq
-	[n]
-	"Square n"
-	(* n n))
-
-(defn pythagorean?
-	[a b c]
-	"True if aa+bb=cc and a<b<c"
-	(and (< a b c) (= (sq c) (+ (sq a) (sq b)))))
-	
-(defn prime?
-	[n]
-	"True if integer is prime"
-	(= 1 (count (factor n))))
-	
-(defn primes
-	[]
-	"Returns infinite sequence of primes"
-	(cons 2 (filter prime? (iterate #(+ 2 %) 3))))
-	
-(defn triangles
-	[]
-	"Returns infinite sequence of triangle numbers"
-	(->> (map #(/ (* % (dec %)) 2) (range)) rest rest))
-
-(defn count-divisors
-	[n]
-	"Returns number of divisors for n, uses factor counting method"
-	(->> (factor n) frequencies (map last) (map inc) (apply *)))
-	
-(defn collatz
-	[n]
-	"Returns Collatz sequence starting with given integer"
-	(conj
-	(->>
-		(iterate #(if (even? %) (/ % 2) (inc (* 3 %))) n)
-		(take-while #(not= 1 %))
-		vec) 1))
-
-(defn sum-digits
-	[n]
-	"Sum of all digits in n"
-	(->>
-		(str n)
-		(map #(- (int %) (int \0)))
-		(apply +')))
-
-;; solutions
-
-(defn p1 []
-	(reduce + 
-		(filter #(any-divisible? % [3 5]) (range 1000))))
-
-(defn p2 []
-	(->> (take-while #(< % 4000000) (fibonacci))
-		(filter even?)
-		(apply +)))
-		
-(defn p3 []
-	(apply max (factor 600851475143)))
-	
-(defn p4 []
-	(->> (for [a (range 1 1000) b (range 1 1000)] (* a b))
-		(filter palindrome?)
-		(apply max)))
-		
-(defn p5 []
-	(->> (map #(frequencies (factor %)) (range 2 21))
-		(reduce #(merge-with max % %2))
-		(map #(repeat (val %) (key %)))
-		flatten (apply *')))
-		
-(defn p6 []
-	(let [r (range 101) 
-		a (sq (apply + r))
-		b (apply + (map sq r))]
-		(bigint (- a b))))
-		
-(defn p7 []
-	(nth (primes) 10000))
-	
-(defn p8 []
-	(let [N 7316717653133062491922511967442657474235534919493496983520312774506326239578318016984801869478851843858615607891129494954595017379583319528532088055111254069874715852386305071569329096329522744304355766896648950445244523161731856403098711121722383113622298934233803081353362766142828064444866452387493035890729629049156044077239071381051585930796086670172427121883998797908792274921901699720888093776657273330010533678812202354218097512545405947522435258490771167055601360483958644670632441572215539753697817977846174064955149290862569321978468622482839722413756570560574902614079729686524145351004748216637048440319989000889524345065854122758866688116427171479924442928230863465674813919123162824586178664583591245665294765456828489128831426076900422421902267105562632111110937054421750694165896040807198403850962455444362981230987879927244284909188845801561660979191338754992005240636899125607176060588611646710940507754100225698315520005593572972571636269561882670428252483600823257530420752963450N]
-	(apply max
-	(for [group (partition 5 1 (str N))]
-		(->> group
-			(map #(Integer/parseInt (str %)))
-			(apply *))))))
-			
-(defn p9 []	; TODO very slow
-	(let [r (range 1 500)]
-		(for [a r b r c r :when (and (pythagorean? a b c) (= 1000 (+ a b c)))]
-			(* a b c))))
-
 (defn p10 [] ; TODO very slow
-	(apply + (take-while #(< % 2000000) (primes))))
+	(apply + (take-while #(< % 2000000) (f/primes))))
 
 (defn p11 []
 	(let [M [
@@ -157,6 +34,7 @@
 			(for [group q4 row (range 20)] (map #(vector row %) group)) ; horiz
 			(for [group q4 col (range 20)] (map #(vector % col) group)) ; vert
 			(for [group diag] (map #(vector (first %) (- 19 (last %))) group)) ; reverse diag
+			diag
 			)]
 	(->> group
 		(map #(get-in M %))
@@ -165,7 +43,7 @@
 		(reduce max))))
 
 (defn p12 []
-	(first (filter #(< 500 (count-divisors %)) (triangles))))
+	(first (filter #(< 500 (f/count-divisors %)) (f/triangles))))
 
 (defn p13 []
 	(let [N [37107287533902102798797998220837590246510135740250
@@ -274,12 +152,13 @@
 (defn p14 [] ; TODO takes 2 minutes
 	(->>
 	(range 1 1000000)
-	(map #(vector % (count (collatz %))))
+	(map #(vector % (count (f/collatz %))))
 	(reduce #(if (> (last %1) (last %2)) %1 %2))
 	first
 	))
 
-(defn p15 [] nil) ; TODO to be done
+(defn p15 []
+	(f/combinations 40 20))
 
 (defn p16 []
-	(sum-digits (reduce * (repeat 1000 2N))))
+	(f/sum-digits (reduce * (repeat 1000 2N))))
