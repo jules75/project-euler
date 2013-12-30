@@ -1,5 +1,6 @@
 (ns euler.p10 
-	(:require [euler.fns :as f]))
+	(:require [euler.fns :as f]
+		[clojure.pprint :as pp]))
 	
 (defn p10 [] ; TODO very slow
 	(apply + (take-while #(< % 2000000) (f/primes))))
@@ -162,3 +163,9 @@
 
 (defn p16 []
 	(f/sum-digits (reduce * (repeat 1000 2N))))
+
+(defn p17 []
+	(->
+		(->> (range 1 1001) (map f/as-words) (apply str))
+		(clojure.string/replace " " "")
+		count))
