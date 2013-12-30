@@ -61,11 +61,17 @@
 		1->2 3->3 6->4 10->5 15->6 etc.
 	If result is whole, n is a triangle number"
 	(->> n (* 8) inc (Math/sqrt) dec (* 0.5)))
-	
+
 (defn proper-divisors
 	[n]
 	"Returns proper divisors of n, e.g. 220 -> 1 2 4 5 10 11 20 22 44 55 110"
-	(filter #(zero? (rem n %)) (range 1 (inc (/ n 2)))))
+	(if (zero? n) []
+	(->> (range 2 (->> (Math/sqrt n) int inc))
+		(filter #(zero? (rem n %)))
+		(map #(vector % (/ n %)))
+		flatten
+		distinct
+		(cons 1))))	
 
 (defn count-divisors
 	[n]
