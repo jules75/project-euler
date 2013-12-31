@@ -43,7 +43,8 @@
 (defn prime?
 	[n]
 	"True if integer is prime"
-	(= 1 (count (factor n))))
+	(if (> 2 n) false
+		(= 1 (count (factor n)))))
 	
 (defn primes
 	[]
