@@ -1,6 +1,7 @@
 (ns euler.p20 
 	(:require [euler.fns :as f]
-		[clojure.set :as set]))
+		[clojure.set :as set]
+		[clojure.math.combinatorics :as c]))
 	
 (defn p20 []
 	(f/sum-digits (f/factorial 100)))
@@ -30,3 +31,6 @@
 		ab-sums (set (for [a abundants b abundants :when (<= a b)] (+ a b)))]
 		(->> (set/difference (set (range limit)) ab-sums) (reduce +))
 		))
+
+(defn p24 []
+	(apply str (-> (range 10) c/permutations (nth 999999))))
