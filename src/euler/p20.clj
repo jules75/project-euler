@@ -34,3 +34,8 @@
 
 (defn p24 []
 	(apply str (-> (range 10) c/permutations (nth 999999))))
+
+(defn p25 []
+	(->> (map vector (range) (f/fibonacci))
+		(filter #(= 1000 (count (str (last %)))))
+		first first))
