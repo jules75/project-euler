@@ -1,6 +1,7 @@
 (ns euler.p20 
 	(:require [euler.fns :as f]
 		[clojure.set :as set]
+		[clojure.pprint :as pp]
 		[clojure.math.combinatorics :as c]))
 	
 (defn p20 []
@@ -39,3 +40,14 @@
 	(->> (map vector (range) (f/fibonacci))
 		(filter #(= 1000 (count (str (last %)))))
 		first first))
+
+(defn p26 [] nil)	; TODO (see git stash)
+
+(defn p27 []
+	(->> (for [a (range -1000 1000) b (range -1000 1000)] 
+		(vector a b (count (f/quadratic-primes a b))))
+		(filter #(< 60 (last %)))
+		(sort-by last)
+		last 
+		butlast 
+		(apply *)))
