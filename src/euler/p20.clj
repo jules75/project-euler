@@ -1,5 +1,6 @@
 (ns euler.p20 
-	(:require [euler.fns :as f]))
+	(:require [euler.fns :as f]
+		[clojure.set :as set]))
 	
 (defn p20 []
 	(f/sum-digits (f/factorial 100)))
@@ -21,4 +22,11 @@
 			(map #(map (fn [s] (- (int (char s)) (dec (int \A)))) %))
 			(map #(reduce + %)))]
 		(reduce + (map * scores (range)))
+		))
+
+(defn p23 []
+	(let [limit 28123
+		abundants (filter #(< % (reduce + (f/proper-divisors %))) (range limit))
+		ab-sums (set (for [a abundants b abundants :when (<= a b)] (+ a b)))]
+		(->> (set/difference (set (range limit)) ab-sums) (reduce +))
 		))
