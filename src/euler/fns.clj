@@ -148,14 +148,3 @@
 				(if (seq p) (recur (rest p) (conj visited child)) visited)
 				)))
 				(map #(get tritree %))))
-
-(defn spiral 
-	[n]
-	"Given square of width n (should be odd), return clockwise spiral starting 
-	in centre, e.g. :r :d :l :l :u :u :r :r :r"
-	(let [counts (drop 2 (interleave (range) (range)))
-		dirs (flatten (repeat [:r :d :l :u]))
-		pairs (partition 2 (interleave counts dirs))]
-		(->> 
-			(for [[c d] pairs :while (<= c n)] (repeat c d))
-			flatten (drop-last (inc n)))))

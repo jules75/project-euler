@@ -52,18 +52,12 @@
 		butlast 
 		(apply *)))
 
-(defn p28 []	; TODO ugly as hell, see http://clojure.roboloco.net/?p=289
-	(let [width 1001
-		dirmap {:r [0 1] :d [1 0] :l [0 -1] :u [-1 0]}
-		offsets-rel (cons [0 0] (map #(% dirmap) (f/spiral width)))
-		offsets-abs (reductions #(map + % %2) offsets-rel)
-		centre [(int (/ width 2)) (int (/ width 2))]
-		coords (map #(map (fn [n m] (+ n m)) % %2) (repeat centre) offsets-abs)
-		diags (concat
-			(map #(vector % %2) (range width) (range width))
-			(map #(vector % %2) (range width) (reverse (range width))))
-		sq-map (zipmap coords (rest (range)))]
-		(->> (map #(get sq-map %) diags) distinct (apply +))))
+(defn p28 []
+	(let [w 1001 r (map #(repeat 4 (+ % %)) (rest (range)))]
+	(->> (flatten (cons 1 r))
+		(reductions +)
+		(take (dec (* 2 w))) 
+		(reduce +))))
 
 (defn p29 []
 	(->> (for [a (range 2 101) b (range 2 101)] (reduce *' (repeat a b)))
