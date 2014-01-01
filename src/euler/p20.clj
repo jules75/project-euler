@@ -52,7 +52,7 @@
 		butlast 
 		(apply *)))
 
-(defn p28 []	; TODO a lot of this code should be in f/spiral
+(defn p28 []	; TODO ugly as hell, see http://clojure.roboloco.net/?p=289
 	(let [width 1001
 		dirmap {:r [0 1] :d [1 0] :l [0 -1] :u [-1 0]}
 		offsets-rel (cons [0 0] (map #(% dirmap) (f/spiral width)))
@@ -64,3 +64,7 @@
 			(map #(vector % %2) (range width) (reverse (range width))))
 		sq-map (zipmap coords (rest (range)))]
 		(->> (map #(get sq-map %) diags) distinct (apply +))))
+
+(defn p29 []
+	(->> (for [a (range 2 101) b (range 2 101)] (reduce *' (repeat a b)))
+		distinct count))
