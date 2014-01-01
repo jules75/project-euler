@@ -51,3 +51,16 @@
 		last 
 		butlast 
 		(apply *)))
+
+(defn p28 []	; TODO a lot of this code should be in f/spiral
+	(let [width 1001
+		dirmap {:r [0 1] :d [1 0] :l [0 -1] :u [-1 0]}
+		offsets-rel (cons [0 0] (map #(% dirmap) (f/spiral width)))
+		offsets-abs (reductions #(map + % %2) offsets-rel)
+		centre [(int (/ width 2)) (int (/ width 2))]
+		coords (map #(map (fn [n m] (+ n m)) % %2) (repeat centre) offsets-abs)
+		diags (concat
+			(map #(vector % %2) (range width) (range width))
+			(map #(vector % %2) (range width) (reverse (range width))))
+		sq-map (zipmap coords (rest (range)))]
+		(->> (map #(get sq-map %) diags) distinct (apply +))))
