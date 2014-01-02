@@ -17,7 +17,7 @@
 				)))))
 
 (defn p22 []
-	(let [sorted-names (-> (slurp "names.txt") 
+	(let [sorted-names (-> (slurp "http://projecteuler.net/project/names.txt") 
 			(clojure.string/split #"\"*,*\"") 	;;;")
 			sort vec)
 		scores (->> sorted-names
