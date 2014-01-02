@@ -33,7 +33,7 @@
 	(letfn [
 		(remove-first [n coll]
 			(let [[a b] (map vec (split-with #(not= n %) coll))] (into a (rest b))))
-		(undigits [coll]
+		(undigits [coll] "Turn digits into integer, e.g. [1 2 5 8 2] => 12582"
 			(if (seq coll) (Integer/parseInt (apply str coll)) 0))
 		(shared-digits [n m]
 			(set/intersection (set (f/digits n)) (set (f/digits m))))]
@@ -53,3 +53,10 @@
 		(->> (range 3 100000)	; TODO smart way to find upper limit
 			(filter sum-of-digit-factorials?)
 			(reduce +))))
+
+(defn p35 [] 
+	(letfn [(rotations [s] "All rotations of string, e.g. abc => bca => cab"
+		(take (count s) (iterate #(str (apply str (rest %)) (first %)) s)))]
+	(count (filter
+		#(every? (fn [x] (f/prime? (Integer/parseInt x))) (rotations (str %)))
+		(range 1000000)))))
