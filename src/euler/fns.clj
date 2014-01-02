@@ -4,11 +4,18 @@
 	[n coll]
 	"True if n is evenly divisible by ANY integer in coll"
 	(some zero? (map #(rem n %) coll)))
+
+(defmulti palindrome? class)
 	
-(defn palindrome?
+(defmethod palindrome? Long
 	[n]
 	"True if integer n is a palindrome"
 	(= n (->> n str reverse (apply str) Integer/parseInt)))
+	
+(defmethod palindrome? String
+	[s]
+	"True if string s is a palindrome"
+	(= s (->> s reverse (apply str))))
 	
 (defn fibonacci
 	[]
@@ -97,7 +104,12 @@
 	[n]
 	"Sequence of digits in integer n"
 	(map #(- (int %) (int \0)) (str n)))
-		
+	
+(defn undigits 
+	[coll] 
+	"Turn digits into integer, e.g. [1 2 5 8 2] => 12582"
+	(if (seq coll) (Integer/parseInt (apply str coll)) 0))
+
 (defn sum-digits
 	[n]
 	"Sum of all digits in n"

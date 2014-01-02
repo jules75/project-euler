@@ -33,14 +33,12 @@
 	(letfn [
 		(remove-first [n coll]
 			(let [[a b] (map vec (split-with #(not= n %) coll))] (into a (rest b))))
-		(undigits [coll] "Turn digits into integer, e.g. [1 2 5 8 2] => 12582"
-			(if (seq coll) (Integer/parseInt (apply str coll)) 0))
 		(shared-digits [n m]
 			(set/intersection (set (f/digits n)) (set (f/digits m))))]
 	(->>
 		(for [a (range 1 100) b (range 1 100) :when (and (< a b) (pos? (rem a 10)))]
 			(let [shared (first (shared-digits a b))
-				[aa bb] (map #(->> % f/digits (remove-first shared) undigits) [a b])]
+				[aa bb] (map #(->> % f/digits (remove-first shared) f/undigits) [a b])]
 				(if (and (pos? bb) (not= a aa) (= (/ a b) (/ aa bb)))
 					[a b])))
 		(remove nil?)
@@ -60,3 +58,11 @@
 	(count (filter
 		#(every? (fn [x] (f/prime? (Integer/parseInt x))) (rotations (str %)))
 		(range 1000000)))))
+
+(defn p36 []
+	(letfn [(base2 [n] "Return n as binary (as string), limited to 2^20"
+		(->> (range 20) (map #(bit-and n (bit-shift-left 1 %)))
+		(map #(if (pos? %) 1 0)) reverse (drop-while zero?) (apply str)))]
+	(->> (range 1000000)
+		(filter #(and (f/palindrome? %) (f/palindrome? (base2 %))))
+		(reduce +))))
