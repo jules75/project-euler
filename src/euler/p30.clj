@@ -115,3 +115,13 @@
 	(->> (for [x (range 9213 9877)] (+ (* x 100000) (* 2 x))) ; all possible solutions
 		(filter #(= (range 1 10) (sort (f/digits %)))) ; keep if pandigital 1-9
 		(apply max)))
+
+(defn p39 []
+	(->> (for [a (range 1 500) b (range 1 a) c (range 1 b)
+			:when (even? (+ a b c))
+			:when (> (+ c b) a)
+			:when (f/pythagorean? c b a)] 
+			(reduce + [a b c]))
+		frequencies
+		(sort-by last)
+		last first))
