@@ -32,8 +32,7 @@
 (defn p33 []
 	(letfn [
 		(remove-first [n coll]
-			(let [[a b] (map vec (split-with #(not= n %) coll))]
-				(into a (rest b))))
+			(let [[a b] (map vec (split-with #(not= n %) coll))] (into a (rest b))))
 		(undigits [coll]
 			(if (seq coll) (Integer/parseInt (apply str coll)) 0))
 		(shared-digits [n m]
@@ -47,3 +46,10 @@
 		(remove nil?)
 		(map #(/ (first %) (last %)))
 		(reduce *))))
+
+(defn p34 []
+	(letfn [(sum-of-digit-factorials? [n]
+		(= n (->> n f/digits (map f/factorial) (reduce +))))]
+		(->> (range 3 100000)	; TODO smart way to find upper limit
+			(filter sum-of-digit-factorials?)
+			(reduce +))))
