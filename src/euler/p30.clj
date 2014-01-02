@@ -66,3 +66,12 @@
 	(->> (range 1000000)
 		(filter #(and (f/palindrome? %) (f/palindrome? (base2 %))))
 		(reduce +))))
+
+(defn p37 []
+	(letfn [(truncate [n] "e.g. 1234 => [1 12 123 1234 1234 234 34 4]"
+		(let [d (f/digits n), f #((partial (juxt take take-last) (inc %)) d)]
+			(map f/undigits (mapcat f (range (count d))))))]
+	(->> (range 11 1000000 2)
+		(filter #(every? f/prime? (truncate %)))
+		(take 11) ; only 11 truncatable primes with 2+ digits exist
+		(reduce +))))
