@@ -22,3 +22,12 @@
 			(map #(f/untriangle (score %)) words)
 			(filter #(zero? (rem % 1)))
 			count)))
+
+(defn p43 []
+	(letfn [(candidate? [digits]
+		(every? true?
+			(map #(zero? (rem (f/undigits (subvec digits % (+ % 3))) %2))
+				(range 1 8) (f/primes))))]
+	(->> (filter candidate? (c/permutations (range 10)))
+		(map f/undigits)
+		(apply +))))

@@ -107,8 +107,8 @@
 	
 (defn undigits 
 	[coll] 
-	"Turn digits into integer, e.g. [1 2 5 8 2] => 12582"
-	(if (seq coll) (Integer/parseInt (apply str coll)) 0))
+	"Turn digits into long, e.g. [1 2 5 8 2] => 12582"
+	(if (seq coll) (Long/parseLong (apply str coll)) 0))
 
 (defn sum-digits
 	[n]
