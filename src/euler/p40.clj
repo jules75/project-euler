@@ -33,11 +33,12 @@
 		(apply +))))
 		
 (defn p44 []
-	(letfn [(pentagonal? [n] 
-		(-> n (* 24) inc (Math/sqrt) inc (/ 6) (rem 1) zero?))]
 	(let [pents (take 10000 (rest (f/pentagonals)))]
 		(for [a pents b pents
 			:when (< a b)
-			:when (pentagonal? (- b a))
-			:when (pentagonal? (+ a b))]
-			(- b a)))))
+			:when (f/pentagonal? (- b a))
+			:when (f/pentagonal? (+ a b))]
+			(- b a))))
+			
+(defn p45 []
+	(nth (filter #(and (f/pentagonal? %) (f/hexagonal? %)) (f/triangles)) 2))

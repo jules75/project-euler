@@ -79,6 +79,21 @@
 		1->2 3->3 6->4 10->5 15->6 etc.
 	If result is whole, n is a triangle number"
 	(->> n (* 8) inc (Math/sqrt) dec (* 0.5)))
+	
+(defn triangle?
+	[n]
+	"True if n is triangle number"
+	(-> n (* 8) inc (Math/sqrt) dec (/ 2) (rem 1) zero?))
+	
+(defn pentagonal? 
+	[n] 
+	"True if n is pentagonal number"
+	(-> n (* 24) inc (Math/sqrt) inc (/ 6) (rem 1) zero?))
+	
+(defn hexagonal?
+	[n]
+	"True if n is hexagonal number"
+	(-> n (* 8) inc (Math/sqrt) inc (/ 4) (rem 1) zero?))
 
 (defn proper-divisors
 	[n]
