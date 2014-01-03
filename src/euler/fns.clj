@@ -68,7 +68,12 @@
 	"Returns infinite sequence of triangle numbers, i.e. 0 1 3 6 10 15 etc."
 	(->> (map #(/ (* % (dec %)) 2) (range)) rest))
 	
-(defn untriangle
+(defn pentagonals
+	[]
+	"Returns infinite sequence of pentagonal numbers, i.e. 0 1 5 12 22 35 etc."
+	(map #(-> % (* 3) dec (* %) (/ 2)) (range)))
+	
+(defn untriangle	; TODO can we replace with triangle? predicate fn?
 	[n]
 	"Returns reverse of triangle number, i.e.
 		1->2 3->3 6->4 10->5 15->6 etc.

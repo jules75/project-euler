@@ -13,7 +13,7 @@
 	(let [len 7	; all 8 or 9 digit pandigitals are divisible by 9
 		pandigitals (->> (range 1 (inc len)) c/permutations reverse (map f/undigits))]
 		(first (filter f/prime? pandigitals))))
-		
+
 (defn p42 []
 	(let [regex #"\",*\"*" ;"
 		words (rest (s/split (slurp "https://projecteuler.net/project/words.txt") regex))
@@ -31,3 +31,13 @@
 	(->> (filter candidate? (c/permutations (range 10)))
 		(map f/undigits)
 		(apply +))))
+		
+(defn p44 []
+	(letfn [(pentagonal? [n] 
+		(-> n (* 24) inc (Math/sqrt) inc (/ 6) (rem 1) zero?))]
+	(let [pents (take 10000 (rest (f/pentagonals)))]
+		(for [a pents b pents
+			:when (< a b)
+			:when (pentagonal? (- b a))
+			:when (pentagonal? (+ a b))]
+			(- b a)))))
