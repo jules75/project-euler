@@ -59,3 +59,11 @@
 		(partition 4 1)
 		(filter #(= (repeat 4 4) (map last %)))
 		first first first))
+
+(defn p48 []
+	(->> (range 1 1001)
+		(map #(reduce *' (repeat % %)))
+		(reduce +')
+		str
+		(take-last 10)
+		(apply str)))
