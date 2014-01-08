@@ -42,3 +42,13 @@
 			
 (defn p45 []
 	(nth (filter #(and (f/pentagonal? %) (f/hexagonal? %)) (f/triangles)) 2))
+
+
+(defn p46 []	; TODO horribly slow, over 5 minutes
+	(letfn [(sum-prime-and-twice-square? [n primes]
+		(boolean (some true? (for [p (take-while #(< % n) primes)
+			s (range 1 n) :when (= n (+ p (* 2 s s)))] true))))]
+	(first
+	(let [odd-composites (filter #(and (odd? %) (< 2 (f/count-divisors %))) (range))]
+		(remove #(sum-prime-and-twice-square? % (f/primes)) odd-composites))
+		)))
