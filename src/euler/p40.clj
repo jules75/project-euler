@@ -1,6 +1,7 @@
 (ns euler.p40
 	(:require [euler.fns :as f]
 		[clojure.string :as s]
+		[clojure.pprint :as pp]
 		[clojure.math.combinatorics :as c]))
 
 (defn p40 []
@@ -67,3 +68,15 @@
 		str
 		(take-last 10)
 		(apply str)))
+
+(defn p49 []
+	(letfn [(candidate? [n]
+		(let [v [n (+ n 3330) (+ n 6660)]]
+			(and (< 1000 n)
+				(apply = (map #(sort (f/digits %)) v))
+				(every? f/prime? v))))]
+	(let [n (->> (f/primes) 
+		(take-while #(< % 3340)) 
+		(filter candidate?)
+		(remove #(= 1487 %)) first)]
+		(str n (+ 3330 n) (+ 6660 n)))))
