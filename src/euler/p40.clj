@@ -52,3 +52,10 @@
 	(let [odd-composites (filter #(and (odd? %) (< 2 (f/count-divisors %))) (range))]
 		(remove #(sum-prime-and-twice-square? % (f/primes)) odd-composites))
 		)))
+
+(defn p47 []
+	(->> (range)
+		(map #(vector % (-> % f/factor frequencies count)))
+		(partition 4 1)
+		(filter #(= (repeat 4 4) (map last %)))
+		first first first))
