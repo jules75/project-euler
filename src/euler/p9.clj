@@ -1,11 +1,15 @@
 (ns euler.p9
 	(:require [euler.fns :as f]))
-			
+	
+(defn triplets
+	[n]
+	"Return all 3 number combinations whose sum is n"
+	(for [a (range (inc n))
+		b (range (- (inc n) a))]
+		[a b (- n a b)]))
+		
 (defn p9 []	; TODO very slow
 	(time (first
-	(let [r (range 1 500)]
-		(for [a r b r c r 
-			:when (= 1000 (+ a b c))
-			:when (f/pythagorean? a b c)]
-			(* a b c)))
-			)))
+	(for [[a b c] (triplets 1000)
+		:when (f/pythagorean? a b c)]
+		(* a b c)))))
