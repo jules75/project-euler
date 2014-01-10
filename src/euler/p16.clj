@@ -1,4 +1,4 @@
-(ns euler.p10 
+(ns euler.p16 
 	(:require [euler.fns :as f]))
 
 (defn p16 []

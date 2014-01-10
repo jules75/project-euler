@@ -1,4 +1,4 @@
-(ns euler.p10)
+(ns euler.p11)
 
 (defn p11 []
 	(let [M [

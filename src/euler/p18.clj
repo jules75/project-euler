@@ -1,5 +1,23 @@
 (ns euler.p18
-	(:require [euler.fns :as f]))
+	(:require [euler.fns :as f]
+			[clojure.math.combinatorics :as c]))
+			
+(defn walk-tritree
+	[tritree path]
+	"Walk path from top of triangle tree (see http://projecteuler.net/problem=18)
+	Triangle tree is represented as single depth vector
+	Path: 0=left 1=right, e.g. [0 0 0 1 1 0 1 0 1 0 1]
+	Returns vector of values"
+	(->> (let [r (range (count tritree))
+		child-map (->> r								; number every node
+			(map #(->> (f/untriangle %) int inc (+ %)))	; find each child index
+			(map #(vector % (inc %)))					; and its neighbour
+			(zipmap r))]								; build map
+		(loop [p path visited [0]]
+			(let [child (get-in child-map [(last visited) (first p)])]
+				(if (seq p) (recur (rest p) (conj visited child)) visited)
+				)))
+				(map #(get tritree %))))
 
 (defn p18 []
 	(let [tri [
@@ -20,6 +38,6 @@
 		04 62 98 27 23  9 70 98 73 93 38 53 60  4 23]]
 		(->>
 			(c/selections [0 1] 14)
-			(map #(reduce + (f/walk-tritree tri %)))
+			(map #(reduce + (walk-tritree tri %)))
 			(apply max))))
 
