@@ -9,15 +9,8 @@
 			(filter #(= % (sum5p %)))
 			(reduce +))))
 
-(defn p31 []	; TODO doesn't work
-	;(let [coins [1 2 5 10 20]]
-		(->>
-			(for [e (range 10) d (range 20) c (range 40) b (range 100) a (range 200)
-				:when (= 200 (+ (* a 1) (* b 2) (* c 5) (* d 10) (* e 20)))]
-				[a b c d e])
-			count
-			time
-			))
+(defn p31 []
+	nil)
 
 (defn p32 []
 	(reduce +
