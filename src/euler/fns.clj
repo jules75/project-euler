@@ -58,11 +58,6 @@
 	"Returns infinite sequence of primes"
 	(cons 2 (filter prime? (iterate #(+ 2 %) 3))))
 
-(defn quadratic-primes
-	[a b]
-	"Starting with n=0, produce consecutive primes from quadratic nn + an + b"
-	(take-while prime? (map #(+ (* % %) (* a %) b) (range))))	
-	
 (defn triangles
 	[]
 	"Returns infinite sequence of triangle numbers, i.e. 0 1 3 6 10 15 etc."
