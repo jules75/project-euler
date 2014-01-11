@@ -30,4 +30,4 @@
 (defn p14 []
 	(->> (collatz-range 1 1000000)
 		(reduce #(if (> (val %) (val %2)) % %2))
-		first time))
+		first))

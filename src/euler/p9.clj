@@ -8,8 +8,8 @@
 		b (range (- (inc n) a))]
 		[a b (- n a b)]))
 		
-(defn p9 []	; TODO very slow
-	(time (first
+(defn p9 []
+	(first
 	(for [[a b c] (triplets 1000)
 		:when (f/pythagorean? a b c)]
-		(* a b c)))))
+		(* a b c))))
