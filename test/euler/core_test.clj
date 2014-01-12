@@ -28,7 +28,18 @@
 		[euler.p26 :refer :all]
 		[euler.p27 :refer :all]
 		[euler.p28 :refer :all]
-		[euler.p29 :refer :all]))
+		[euler.p29 :refer :all]
+		[euler.p30 :refer :all]
+		;[euler.p31 :refer :all]
+		[euler.p32 :refer :all]
+		[euler.p33 :refer :all]
+		[euler.p34 :refer :all]
+		[euler.p35 :refer :all]
+		[euler.p36 :refer :all]
+		[euler.p37 :refer :all]
+		[euler.p38 :refer :all]
+		[euler.p39 :refer :all]
+		))
 
 (deftest p1-9
 	(println "\nProblems 1 to 9")
@@ -54,5 +65,14 @@
 		(let [fns [p20 p21 p22 p23 p24 p25 p26 p27 p28 p29]
 			answers [648 31626 871198282 4179871 2783915460 4782
 				983 -59231 669171001 9183]]
+		(doall (map #(is (= %1 (time (%2)))) answers fns))
+		)))
+		
+(deftest p30-39
+	(println "\nProblems 30 to 39")
+	(testing
+		(let [fns [p30 p32 p33 p34 p35 p36 p37 p38 p39]	; p31 is missing!
+			answers [443839 45228 100 40730 55 872187 
+				748317 932718654 840]]
 		(doall (map #(is (= %1 (time (%2)))) answers fns))
 		)))
