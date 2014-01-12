@@ -92,13 +92,13 @@
 
 (defn proper-divisors
 	[n]
-	"Returns proper divisors of n, e.g. 220 -> 1 2 4 5 10 11 20 22 44 55 110"
+	"Returns set of proper divisors of n, e.g. 220 -> 1 2 4 5 10 11 20 22 44 55 110"
 	(if (zero? n) []
 	(->> (range 2 (->> (Math/sqrt n) int inc))
 		(filter #(zero? (rem n %)))
 		(map #(vector % (/ n %)))
 		flatten
-		distinct
+		set
 		(cons 1))))	
 
 (defn count-divisors
