@@ -30,7 +30,7 @@
 		[euler.p28 :refer :all]
 		[euler.p29 :refer :all]))
 
-#_(deftest p1-9
+(deftest p1-9
 	(println "\nProblems 1 to 9")
 	(testing
 		(let [fns [p1 p2 p3 p4 p5 p6 p7 p8 p9]
@@ -39,7 +39,7 @@
 		(doall (map #(is (= %1 (time (%2)))) answers fns))
 		)))
 
-#_(deftest p10-19
+(deftest p10-19
 	(println "\nProblems 10 to 19")
 	(testing
 		(let [fns [p10 p11 p12 p13 p14 p15 p16 p17 p18 p19]
