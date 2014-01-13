@@ -4,11 +4,15 @@
 
 (defn candidate? 
 	[digits]
-	(every? true?
-		(map #(zero? (rem (f/undigits (subvec digits % (+ % 3))) %2))
-			(range 1 8) (f/primes))))
-				
+	(let [primes [2 3 5 7 11 13 17]
+		groups (map #(f/undigits (subvec digits % (+ % 3))) (range 1 8))
+		remainders (map #(rem % %2) groups primes)]
+		(every? zero? remainders)))
+
 (defn p43 []
-	(->> (filter candidate? (c/permutations (range 10)))
+	(->> (c/permutations (range 10))
+		(filter #(even? (nth % 3)))						; 4th digit must be even
+		(filter #(or (= 0 (nth % 5)) (= 5 (nth % 5))))	; 6th digit must be 0 or 5
+		(filter candidate?)
 		(map f/undigits)
-		(apply +)))
+		(reduce +)))
