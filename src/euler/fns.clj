@@ -58,6 +58,14 @@
 	"Returns infinite sequence of primes"
 	(cons 2 (filter prime? (iterate #(+ 2 %) 3))))
 
+(defn sieve
+	[mults coll]
+	"Remove multiples of each n in mult from coll except 1n"
+	(let [n (first mults)]
+		(if (seq mults)
+			(recur (rest mults) (remove #(and (not= n %) (zero? (rem % n))) coll))
+			coll)))
+
 (defn triangles
 	[]
 	"Returns infinite sequence of triangle numbers, i.e. 0 1 3 6 10 15 etc."

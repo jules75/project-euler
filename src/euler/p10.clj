@@ -18,14 +18,6 @@
 	1193 1201 1213 1217 1223 1229 1231 1237 1249 1259 1277 1279 1283 1289 
 	1291 1297 1301 1303 1307 1319 1321 1327 1361 1367 1373 1381 1399 1409])
  
-(defn remove-multiples
-	[mults coll]
-	"Remove multiples of each n in mult from coll except 1n"
-	(let [n (first mults)]
-		(if (seq mults)
-			(recur (rest mults) (remove #(and (not= n %) (zero? (rem % n))) coll))
-			coll)))
- 
 (defn p10 []
 	(let [n 2000000]
-		(reduce + (remove-multiples primes (range 2 n)))))
+		(reduce + (f/sieve primes (range 2 n)))))

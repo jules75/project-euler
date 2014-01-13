@@ -21,14 +21,6 @@
 	769 773 787 797 809 811 821 823 827 829 839 853 857 859 863 877 
 	881 883 887 907 911 919 929 937 941 947 953 967 971 977 983 991 
 	997])
- 
-(defn sieve
-	[mults coll]
-	"Remove multiples of each n in mult from coll except 1n"
-	(let [n (first mults)]
-		(if (seq mults)
-			(recur (rest mults) (remove #(and (not= n %) (zero? (rem % n))) coll))
-			coll)))
 
 (defn prime-rotations?
 	[n]
@@ -39,11 +31,10 @@
 	(empty? (s/difference (set (f/digits n)) #{1 3 7 9})))
 
 (defn p35 [] 
-	(time
-	(let [primes-to-1m (cons 2 (sieve primes-to-1k (range 3 1000000 2)))]
+	(let [primes-to-1m (cons 2 (f/sieve primes-to-1k (range 3 1000000 2)))]
 		(->> primes-to-1m
 			(filter digits-1379?)
 			(filter prime-rotations?)
 			count
 			(+ 2)	; include 2 and 5
-			))))
+			)))
