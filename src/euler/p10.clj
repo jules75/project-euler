@@ -20,4 +20,9 @@
  
 (defn p10 []
 	(let [n 2000000]
-		(reduce + (f/sieve primes (range 2 n)))))
+		(->>
+			(range 3 n 2)
+			(cons 2)
+			(f/sieve primes)
+			(apply +)
+			)))
