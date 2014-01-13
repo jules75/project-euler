@@ -4,7 +4,9 @@ Clojure solutions to Project Euler problems (http://projecteuler.net)
 
 ## Usage
 
-Feel free to do whatever you want with any of this code. Mostly I favour solving a problem with concise code over fast execution.
+Feel free to do whatever you want with any of this code.
+
+I've tried to balance execution time with concision and clarity, with mixed results.
 
 Run 'lein test' to see execution times for solutions.
 
