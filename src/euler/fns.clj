@@ -63,7 +63,7 @@
 	"Remove multiples of each n in mult from coll except 1n"
 	(let [n (first mults)]
 		(if (seq mults)
-			(recur (rest mults) (remove #(and (not= n %) (zero? (rem % n))) coll))
+			(recur (rest mults) (remove #(and (zero? (unchecked-remainder-int % n)) (not= n %)) coll))
 			coll)))
 
 (defn triangles
