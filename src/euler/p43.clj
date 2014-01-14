@@ -2,6 +2,14 @@
 	(:require [euler.fns :as f]
 		[clojure.set :as s]))
 
+;		
+; Brute force was too slow for this problem. It's better to calculate all
+; possible multiples of 17 (the last triplet), and work back from there.
+; This yields much more inelegant code, but runs MUCH faster.
+;
+; TODO refactor the whole thing - perhaps use recursion?
+;
+
 (defn unique-digits?
 	[n]
 	"True if n has no repeated digits"
@@ -44,39 +52,24 @@
 			(concat (first digits) (map last (rest digits)))
 			)))
 
-; ugly as hell, but MUCH faster than brute force
-; TODO refactor
-(defn p43 []
-	(->> 
-		(init) 
-		
-		(remove #(empty? (prepend-multiple (first %) 13)))
-		(mapcat #(for [n (prepend-multiple (first %) 13)] (cons n %)))
+(defn prepend 
+	[n coll]
+	(->> coll
+		(remove #(empty? (prepend-multiple (first %) n)))
+		(mapcat #(for [n (prepend-multiple (first %) n)] (cons n %)))
 		(filter #(unique-digits? (assemble %)))
-		
-		(remove #(empty? (prepend-multiple (first %) 11)))
-		(mapcat #(for [n (prepend-multiple (first %) 11)] (cons n %)))
-		(filter #(unique-digits? (assemble %)))
-		
-		(remove #(empty? (prepend-multiple (first %) 7)))
-		(mapcat #(for [n (prepend-multiple (first %) 7)] (cons n %)))
-		(filter #(unique-digits? (assemble %)))
-		
-		(remove #(empty? (prepend-multiple (first %) 5)))
-		(mapcat #(for [n (prepend-multiple (first %) 5)] (cons n %)))
-		(filter #(unique-digits? (assemble %)))
-		
-		(remove #(empty? (prepend-multiple (first %) 3)))
-		(mapcat #(for [n (prepend-multiple (first %) 3)] (cons n %)))
-		(filter #(unique-digits? (assemble %)))		
-		
-		(remove #(empty? (prepend-multiple (first %) 2)))
-		(mapcat #(for [n (prepend-multiple (first %) 2)] (cons n %)))
-		(filter #(unique-digits? (assemble %)))		
+		))
 
+(defn p43 []
+	(->> (init) 
+		(prepend 13)
+		(prepend 11)
+		(prepend 7)
+		(prepend 5)
+		(prepend 3)
+		(prepend 2)
 		(map assemble)
 		(remove #(< (count (f/digits %)) 9))
 		(map prepend-missing)
 		(reduce +)
-		
 		))
