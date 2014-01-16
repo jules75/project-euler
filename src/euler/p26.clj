@@ -1,5 +1,5 @@
 (ns euler.p26
-	(:require [euler.fns :as f]))
+	(:require [euler.prime :as p]))
 
 (defn p26 []
 ; 
@@ -10,7 +10,7 @@
 ; See point 9 at http://mathworld.wolfram.com/DecimalExpansion.html
 ; 
 	(let [nines (iterate #(+ 9 (*' 10 %)) 9)
-		primes (drop 3 (take-while #(< % 1000) (f/primes)))]
+		primes (drop 3 (take-while #(< % 1000) (p/primes)))]
 	(->>
 		(for [p primes] (-> (filter #(zero? (rem % p)) nines) first str count))
 		(zipmap primes)

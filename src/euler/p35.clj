@@ -1,5 +1,6 @@
 (ns euler.p35
 	(:require [euler.fns :as f]
+		[euler.prime :as p]
 		[clojure.set :as s]))
 
 (defn rotations 
@@ -24,14 +25,14 @@
 
 (defn prime-rotations?
 	[n]
-	(every? f/prime? (map #(Long/parseLong %) (rotations (str n)))))
+	(every? p/prime? (map #(Long/parseLong %) (rotations (str n)))))
 	
 (defn digits-1379?
 	[n]
 	(empty? (s/difference (set (f/digits n)) #{1 3 7 9})))
 
 (defn p35 [] 
-	(let [primes-to-1m (cons 2 (f/sieve primes-to-1k (range 3 1000000 2)))]
+	(let [primes-to-1m (cons 2 (p/sieve primes-to-1k (range 3 1000000 2)))]
 		(->> primes-to-1m
 			(filter digits-1379?)
 			(filter prime-rotations?)

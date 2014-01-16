@@ -1,5 +1,5 @@
 (ns euler.p46
-	(:require [euler.fns :as f]
+	(:require [euler.prime :as p]
 		[clojure.set :as set]))
 
 (defn twice-squares
@@ -9,7 +9,7 @@
 
 (defn sum-primes-and-twice-squares
 	[max]
-	(for [p (take-while #(< % max) (f/primes)) 
+	(for [p (take-while #(< % max) (p/primes)) 
 			t (take-while #(< % max) (twice-squares))] 
 			(+ p t)))
 			

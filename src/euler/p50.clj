@@ -1,5 +1,6 @@
 (ns euler.p50
 	(:require [euler.fns :as f]
+		[euler.prime :as p]
 		[clojure.pprint :as pp]))
 		
 (def primes-to-1k [
@@ -15,7 +16,7 @@
 	881 883 887 907 911 919 929 937 941 947 953 967 971 977 983 991 
 	997])
  
-(def primes-to-1m (f/sieve primes-to-1k (cons 2 (range 3 1000000 2))))
+(def primes-to-1m (p/sieve primes-to-1k (cons 2 (range 3 1000000 2))))
 
 (defn prime-sums
 	[start max]
@@ -35,7 +36,7 @@
 		(if (seq s)
 			(->>
 				(zipmap (-> s count inc range rest) s)		; attach counts to sums
-				(filter #(f/prime? (last %)))				; keep only primes
+				(filter #(p/prime? (last %)))				; keep only primes
 				(reduce #(if (> (key %1) (key %2)) %1 %2))	; find longest series
 				) [0 0])))
 

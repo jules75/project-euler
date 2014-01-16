@@ -1,5 +1,6 @@
 (ns euler.p7
-	(:require [euler.fns :as f]))
+	(:require [euler.fns :as f]
+			[euler.prime :as p]))
 
 (defn p7 []
-	(nth (f/primes) 10000))
+	(nth (p/primes) 10000))

@@ -1,5 +1,5 @@
 (ns euler.p10 
-	(:require [euler.fns :as f]))
+	(:require [euler.prime :as p]))
 	
 ; primes up to sqrt of 2 million
 (def primes [
@@ -21,6 +21,6 @@
 (defn p10 []
 	(let [n 2000000]
 		(->>
-			(f/sieve primes (cons 2 (range 3 n 2)))
+			(p/sieve primes (cons 2 (range 3 n 2)))
 			(apply +)
 			)))
