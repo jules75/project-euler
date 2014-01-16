@@ -34,7 +34,7 @@
 		[euler.p32 :refer :all]
 		[euler.p33 :refer :all]
 		[euler.p34 :refer :all]
-		[euler.p35 :refer :all]
+		[euler.p35 :refer [p35]]
 		[euler.p36 :refer :all]
 		[euler.p37 :refer :all]
 		[euler.p38 :refer :all]
