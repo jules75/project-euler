@@ -8,7 +8,7 @@
 	(< n (reduce + (f/proper-divisors n))))
 	
 (defn sum-pair?
-	[n coll]
+	[n coll]	; TODO incorrect to assume to maps faster than vectors
 	"Returns true if any 2 numbers in coll add up to n
 	For performance, coll should be map with ints for keys, e.g.
 	{0 nil, 13 nil, 99 nil}, values are ignored"
