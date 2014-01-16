@@ -25,9 +25,10 @@
 			(recur (rest mults) (remove #(and (zero? (unchecked-remainder-int % n)) (not= n %)) coll))
 			coll)))
 
-(defn prime? ; TODO faster to test for composite
+(defn prime?
 	[n]
-	"True if integer is prime"
+	"True if integer is prime
+	This should be slow (no need to fully factor n), but isn't - why?"
 	(if (> 2 n) false
 		(= 1 (count (f/factor n)))))
 	
