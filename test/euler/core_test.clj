@@ -52,6 +52,7 @@
 		[euler.p50 :refer :all]
 		;[euler.p51 :refer :all]
 		[euler.p52 :refer :all]
+		[euler.p53 :refer :all]
 		))
 
 (deftest p1-9
@@ -99,10 +100,10 @@
 		(doall (map #(is (= %1 (time (%2)))) answers fns))
 		)))
 
-(deftest p50-52
-	(println "\nProblems 50 to 52")
+(deftest p50-53
+	(println "\nProblems 50 to 53")
 	(testing
-		(let [fns [p50 p52]	; missing 51
-			answers [997651 142857]]
+		(let [fns [p50 p52 p53]	; missing 51
+			answers [997651 142857 4075]]
 		(doall (map #(is (= %1 (time (%2)))) answers fns))
 		)))
