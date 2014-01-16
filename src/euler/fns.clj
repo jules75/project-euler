@@ -7,16 +7,16 @@
 
 (defmulti palindrome? class)
 	
-(defmethod palindrome? Long
-	[n]
-	"True if integer n is a palindrome"
-	(= n (->> n str reverse (apply str) Integer/parseInt)))
-	
 (defmethod palindrome? String
 	[s]
 	"True if string s is a palindrome"
 	(= s (->> s reverse (apply str))))
-	
+
+(defmethod palindrome? Long
+	[n]
+	"True if integer n is a palindrome"
+	(palindrome? (str n)))
+
 (defn fibonacci
 	[]
 	"Returns infinite terms of fibonacci series"
