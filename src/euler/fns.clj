@@ -113,3 +113,8 @@
 (defn factorial
 	[n]
 	(reduce *' (range 1 (inc n))))
+
+(defn count-combinations
+	[n r]
+	"See calculatorsoup.com/calculators/discretemathematics/combinations.php"
+	(/ (factorial n) (*' (factorial r) (factorial (- n r)))))
