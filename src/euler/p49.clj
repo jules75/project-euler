@@ -10,8 +10,7 @@
 			(every? p/prime? v))))
 		
 (defn p49 []
-	(let [n (->> (p/primes) 
-			(take-while #(< % 3340)) 
+	(let [n (->> (p/primes 3340) 
 			(filter candidate?)
 			(remove #(= 1487 %)) first)]
 		(Long/parseLong (str n (+ 3330 n) (+ 6660 n)))

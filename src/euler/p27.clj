@@ -11,7 +11,7 @@
 	
 (defn p27 []
 	(->> (for [a (range -1000 1000) 
-				b (take-while #(< % 1000) (p/primes)) ; b must be prime - why?
+				b (p/primes 1000) ; b must be prime - why?
 				:let [c (count (quadratic-primes a b))]
 				:when (> c @max-qpc)
 				]

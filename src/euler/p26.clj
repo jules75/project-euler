@@ -10,7 +10,7 @@
 ; See point 9 at http://mathworld.wolfram.com/DecimalExpansion.html
 ; 
 	(let [nines (iterate #(+ 9 (*' 10 %)) 9)
-		primes (drop 3 (take-while #(< % 1000) (p/primes)))]
+		primes (drop 3 (p/primes 1000))]
 	(->>
 		(for [p primes] (-> (filter #(zero? (rem % p)) nines) first str count))
 		(zipmap primes)

@@ -9,7 +9,7 @@
 
 (defn sum-primes-and-twice-squares
 	[max]
-	(for [p (take-while #(< % max) (p/primes)) 
+	(for [p (p/primes max) 
 			t (take-while #(< % max) (twice-squares))] 
 			(+ p t)))
 			

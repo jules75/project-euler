@@ -1,7 +1,6 @@
 (ns euler.prime 
 	(:require [euler.fns :as f]))
 
-; primes up to sqrt of 2 million
 (def primes-to-sqrt-2m [
 	2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 
 	83 89 97 101 103 107 109 113 127 131 137 139 149 151 157 163 167 
@@ -26,17 +25,13 @@
 			(recur (rest mults) (remove #(and (zero? (unchecked-remainder-int % n)) (not= n %)) coll))
 			coll)))
 
-(defn prime? ; TODO faster to test for composite?
+(defn prime? ; TODO faster to test for composite
 	[n]
 	"True if integer is prime"
 	(if (> 2 n) false
 		(= 1 (count (f/factor n)))))
 	
 (defn primes 
-	([] ; TODO get rid of
-		"Returns infinite sequence of primes"
-		(cons 2 (filter prime? (iterate #(+ 2 %) 3))))
-	([max]
-		(assert (<= max 2000000))
-		(cons 2 (sieve primes-to-sqrt-2m (range 3 max 2)))
-		))
+	[max]
+	(assert (<= max 2000000))
+	(cons 2 (sieve primes-to-sqrt-2m (range 3 max 2))))
