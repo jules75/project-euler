@@ -55,9 +55,9 @@
 		[euler.p54 :refer :all]
 		[euler.p55 :refer :all]
 		[euler.p56 :refer :all]
-		[euler.p57 :refer :all]		
-		
+		[euler.p57 :refer :all]
 		[euler.p67 :refer :all]
+    [euler.p85 :refer :all]
 		))
 
 (deftest p1-9
@@ -76,7 +76,7 @@
 			answers [142913828922 70600674 76576500 5537376230 837799
 				137846528820 1366 21124 1074 171]]
 		(doall (map #(is (= %1 (time (%2)))) answers fns))
-		)))		
+		)))
 
 (deftest p20-29
 	(println "\nProblems 20 to 29")
@@ -86,12 +86,12 @@
 				983 -59231 669171001 9183]]
 		(doall (map #(is (= %1 (time (%2)))) answers fns))
 		)))
-		
+
 (deftest p30-39
 	(println "\nProblems 30 to 39")
 	(testing
 		(let [fns [p30 p31 p32 p33 p34 p35 p36 p37 p38 p39]
-			answers [443839 73682 45228 100 40730 55 872187 
+			answers [443839 73682 45228 100 40730 55 872187
 				748317 932718654 840]]
 		(doall (map #(is (= %1 (time (%2)))) answers fns))
 		)))
@@ -100,7 +100,7 @@
 	(println "\nProblems 40 to 49")
 	(testing
 		(let [fns [p40 p41 p42 p43 p44 p45 p46 p47 p48 p49]
-			answers [210 7652413 162 16695334890 5482660 
+			answers [210 7652413 162 16695334890 5482660
 				1533776805 5777 134043 9110846700 296962999629]]
 		(doall (map #(is (= %1 (time (%2)))) answers fns))
 		)))
@@ -118,5 +118,13 @@
 	(testing
 		(let [fns [p67]
 			answers [7273]]
+		(doall (map #(is (= %1 (time (%2)))) answers fns))
+		)))
+
+(deftest p80-89
+	(println "\nProblems 80 to 89")
+	(testing
+		(let [fns [p85]
+			answers [2772]]
 		(doall (map #(is (= %1 (time (%2)))) answers fns))
 		)))
