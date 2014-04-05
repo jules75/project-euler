@@ -55,10 +55,11 @@
 		[euler.p54 :refer :all]
 		[euler.p55 :refer :all]
 		[euler.p56 :refer :all]
-		[euler.p57 :refer :all]		
+		[euler.p57 :refer :all]
 		[euler.p62 :refer :all]
 		[euler.p67 :refer :all]
     [euler.p85 :refer :all]
+    [euler.p96 :refer :all]
 		))
 
 (deftest p1-9
@@ -127,5 +128,13 @@
 	(testing
 		(let [fns [p85]
 			answers [2772]]
+		(doall (map #(is (= %1 (time (%2)))) answers fns))
+		)))
+
+(deftest p90-99
+	(println "\nProblems 90 to 99")
+	(testing
+		(let [fns [p96]
+			answers [24702]]
 		(doall (map #(is (= %1 (time (%2)))) answers fns))
 		)))
