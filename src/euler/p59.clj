@@ -1,4 +1,4 @@
-(ns euler.p58
+(ns euler.p59
 	(:require [clojure.string :as s]))
 
 (def cipher-nums
@@ -26,7 +26,7 @@
   (boolean (re-find #" the " string))
   )
 
-(defn p58 []
+(defn p59 []
   (->> passwords
    (map #(xor cipher-nums %))
    (map #(map char %))
