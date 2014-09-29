@@ -2,93 +2,87 @@
 	(:require [clojure.test :refer :all]
 		))
 
-; while 'use' is discouraged, it's handy here
-(use '(euler p1 p2 p3 p4 p5 p6 p7 p8 p9))
-(use '(euler p10 p11 p12 p13 p14 p15 p16 p17 p18 p19))
-(use '(euler p20 p21 p22 p23 p24 p25 p26 p27 p28 p29))
-(use '(euler p30 p31 p32 p33 p34 p35 p36 p37 p38 p39))
-(use '(euler p40 p41 p42 p43 p44 p45 p46 p47 p48 p49))
-(use '(euler p50     p52 p53 p54 p55 p56 p57     p59))
-(use '(euler         p62                 p67        ))
-(use '(euler                                        ))
-(use '(euler                     p85                ))
-(use '(euler                         p96            ))
+(def solutions {
+    :p1    233168 
+    :p2    4613732 
+    :p3    6857 
+    :p4    906609 
+    :p5    232792560 
+    :p6    25164150
+    :p7    104743 
+    :p8    40824 
+    :p9    31875000
 
-(defn f [a b] (is (= a (time (b)))))
+    :p10   142913828922 
+    :p11   70600674 
+    :p12   76576500
+    :p13   5537376230
+    :p14   837799
+    :p15   137846528820 
+    :p16   1366 
+    :p17   21124 
+    :p18   1074 
+    :p19   171
+                 
+    :p20    648 
+    :p21    31626 
+    :p22    871198282 
+    :p23    4179871 
+    :p24    2783915460 
+    :p25    4782
+    :p26    983 
+    :p27    -59231 
+    :p28    669171001 
+    :p29    9183    
 
-(deftest p1-9
-	(println "\nProblems 1 to 9")
-	(testing
-		(let [fns [p1 p2 p3 p4 p5 p6 p7 p8 p9]
-			answers [233168 4613732 6857 906609 232792560 25164150
-				104743 40824 31875000]]
-		(doall (map f answers fns))
-		)))
+    :p30    443839 
+    :p31    73682 
+    :p32    45228 
+    :p33    100 
+    :p34    40730
+    :p35    55
+    :p36    872187
+    :p37    748317 
+    :p38    932718654
+    :p39    840   
 
-(deftest p10-19
-	(println "\nProblems 10 to 19")
-	(testing
-		(let [fns [p10 p11 p12 p13 p14 p15 p16 p17 p18 p19]
-			answers [142913828922 70600674 76576500 5537376230 837799
-				137846528820 1366 21124 1074 171]]
-		(doall (map f answers fns))
-		)))
+    :p40    210
+    :p41    7652413
+    :p42    162
+    :p43    16695334890
+    :p44    5482660
+    :p45    1533776805
+    :p46    5777
+    :p47    134043
+    :p48    9110846700
+    :p49    296962999629
 
-(deftest p20-29
-	(println "\nProblems 20 to 29")
-	(testing
-		(let [fns [p20 p21 p22 p23 p24 p25 p26 p27 p28 p29]
-			answers [648 31626 871198282 4179871 2783915460 4782
-				983 -59231 669171001 9183]]
-		(doall (map f answers fns))
-		)))
+    :p50    997651 
+    :p52    142857
+    :p53    4075
+    :p54    376
+    :p55    249
+    :p56    972
+    :p57    153
+    :p59    107359
 
-(deftest p30-39
-	(println "\nProblems 30 to 39")
-	(testing
-		(let [fns [p30 p31 p32 p33 p34 p35 p36 p37 p38 p39]
-			answers [443839 73682 45228 100 40730 55 872187
-				748317 932718654 840]]
-		(doall (map f answers fns))
-		)))
+    :p62    127035954683
+    :p67    7273
 
-(deftest p40-49
-	(println "\nProblems 40 to 49")
-	(testing
-		(let [fns [p40 p41 p42 p43 p44 p45 p46 p47 p48 p49]
-			answers [210 7652413 162 16695334890 5482660
-				1533776805 5777 134043 9110846700 296962999629]]
-		(doall (map f answers fns))
-		)))
+    :p85    2772
 
-(deftest p50-59
-	(println "\nProblems 50 to 59")
-	(testing
-		(let [fns [p50 p52 p53 p54 p55 p56 p57 p59]
-			answers [997651 142857 4075 376 249 972 153 107359]]
-		(doall (map f answers fns))
-		)))
+    :p96    24702
+                 })
 
-(deftest p60-69
-	(println "\nProblems 60 to 69")
-	(testing
-		(let [fns [p62 p67]
-			answers [127035954683 7273]]
-		(doall (map f answers fns))
-		)))
+(defn load-and-execute
+    "Return result for given problem number, e.g. 'p53'"
+    [problem]
+    (let [s (str "(do (use 'euler." problem ") (euler." problem "/" problem "))")]
+        (eval (read-string s))
+        ))
 
-(deftest p80-89
-	(println "\nProblems 80 to 89")
-	(testing
-		(let [fns [p85]
-			answers [2772]]
-		(doall (map f answers fns))
-		)))
-
-(deftest p90-99
-	(println "\nProblems 90 to 99")
-	(testing
-		(let [fns [p96]
-			answers [24702]]
-		(doall (map f answers fns))
-		)))
+(deftest compare-answers
+    (doseq [pair solutions :let [prob (key pair) answer (val pair)]]
+        (print prob "\t")
+        (is (= answer (time (load-and-execute (name prob)))))
+        ))
