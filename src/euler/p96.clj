@@ -118,7 +118,7 @@
 (defn- fetch
   []
   "Read sudokus from project euler site"
-  (->> (slurp "http://projecteuler.net/project/sudoku.txt")
+  (->> (slurp "https://projecteuler.net/project/resources/p096_sudoku.txt")
        split-lines
        (remove #(re-find #"Grid" %))
        (map #(map (fn [c] (- (int c) 48)) %))
@@ -147,7 +147,7 @@
      (->> s create             ; import it
           solve                ; solve with traditional strategies
           isolate-candidates   ; brute force if not solved
-          (map solve)
+          (pmap solve)
           (filter solved?)
           first
           (take 3) flatten     ; get first three digits

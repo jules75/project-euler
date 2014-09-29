@@ -3,7 +3,7 @@
 			[clojure.string :as s]))
 (defn fetch
 	[]
-	(->> (slurp "http://projecteuler.net/project/triangle.txt")
+	(->> (slurp "https://projecteuler.net/project/resources/p067_triangle.txt")
 		s/split-lines
 		(map #(s/split % #"\s"))
 		(map #(map (fn [s] (Integer/parseInt s)) %))

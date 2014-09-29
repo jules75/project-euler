@@ -14,7 +14,7 @@
 	[]
 	"Fetch poker hands from Project Euler"
 	(->>
-		(slurp "http://projecteuler.net/project/poker.txt")
+		(slurp "https://projecteuler.net/project/resources/p054_poker.txt")
 		s/split-lines
 		(map #(s/split % #"\s"))
 		(map #(map cardify %))
@@ -104,4 +104,4 @@
 			(< (rank h1) (rank h2)) false
 			(= (rank h1) (rank h2)) (highest? h1 h2)
 			)))))
-
+

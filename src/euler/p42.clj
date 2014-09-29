@@ -4,7 +4,8 @@
 
 (defn p42 []
 	(let [regex #"\",*\"*" ;"
-		words (rest (s/split (slurp "https://projecteuler.net/project/words.txt") regex))
+        url "https://projecteuler.net/project/resources/p042_words.txt"
+		words (rest (s/split (slurp url) regex))
 		score (fn [w] (reduce + (map #(- (int %) (int \A) -1) w)))]
 		(->>
 			(map #(f/untriangle (score %)) words)

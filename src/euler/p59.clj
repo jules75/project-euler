@@ -2,7 +2,7 @@
 	(:require [clojure.string :as s]))
 
 (def cipher-nums
-  (let [raw (slurp "https://projecteuler.net/project/cipher1.txt")
+  (let [raw (slurp "https://projecteuler.net/project/resources/p059_cipher.txt")
    tokens (s/split (s/trim raw) #",")]
   (map #(Integer/parseInt %) tokens)
   ))
