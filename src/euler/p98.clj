@@ -1,8 +1,6 @@
 (ns euler.p98
   (:require
    [clojure.string :as s]
-   [clojure.set :as set]
-   [clojure.pprint :refer [pprint]]
    [clojure.math.combinatorics :as c]
    ))
 
@@ -50,24 +48,18 @@
 
 (defn p98
   []
-  (let [pairs #(c/combinations % 2)
+  (let [intify #(map (fn [n] (Integer/parseInt n)) %)
+		pairs #(c/combinations % 2)
 		f #(mapcat pairs (anagram-groups %))
 		word-pairs (f (fetch-words))
 		num-pairs (f (str-squares))]
-	(->>
-	 (for [[a b] word-pairs
-		   [c d] num-pairs
-		   :when (correspond? a c)
-		   :when (correspond? b d)
-		   :when (= (zipmap a c) (zipmap b d))
-		   ]
-	   [a b c d])
-	 (mapcat #(drop 2 %))
-	 set
-	 (map #(Integer/parseInt %))
-	 sort
-	 reverse
-	 first
-	 )))
+	(reduce max
+			(for [[a b] word-pairs
+				  [c d] num-pairs
+				  :when (correspond? a c)
+				  :when (correspond? b d)
+				  :when (= (zipmap a c) (zipmap b d))]
+			  (apply max (intify [c d]))
+			  ))))
 
 ;(time (p98))
