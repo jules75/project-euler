@@ -7,7 +7,6 @@
 (defn fetch-words
   []
   (let [url "https://projecteuler.net/project/resources/p098_words.txt"
-		url "p098_words.txt"
 		raw (slurp url)
 		len (count raw)]
 	(s/split (subs raw 1 (dec len)) #"\",\"")))
@@ -56,5 +55,3 @@
 			  (apply max (intify [c d]))
 			  ))))
 
-
-;(time (p98))
