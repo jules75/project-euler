@@ -30,20 +30,24 @@
 	(swap! term-lookup #(assoc % n (terminator n @term-lookup)))))
 
 
-(defn boundary
+(defn boundary-diff
+  "The square-digit-sums fn generates values using the differences between each subsequent
+  value. This gets hairy when a number ticks over from ending in a 9 to ending in a 0.
+  This function returns the difference to apply to a number ending in 9."
   [n]
-  (let [[_ pp mm] (re-find #"([0-8]{0,1})(9+)$" (str n))
-		m (count mm)
-		p (if (seq pp) (Integer/parseInt pp) 0)]
-	(* -1 (+ (* 81 m) (* p p) (* -1 (inc p) (inc p))))))
+  (let [[_ a b] (re-find #"([0-8]{0,1})(9+)$" (str n))
+		p (if (seq a) (Integer/parseInt a) 0)
+		q (inc p)
+		m (count b)]
+	(* -1 (+ (* 81 m) (* p p) (* -1 q q)))))
 
 
 (defn square-digit-sums
   "Returns an infinte sequence of all square digit sums, starting
   with 1. Takes advantage of pattern of differences between each
-  value, much faster than fully calculating each one."
+  value, much faster than individually calculating each one."
   []
-  (let [tens (map #(-> % inc (* 10) dec boundary) (range))]
+  (let [tens (map #(-> % inc (* 10) dec boundary-diff) (range))]
 	(reductions + (mapcat #(vector 1 3 5 7 9 11 13 15 17 %) tens))))
 
 
@@ -51,8 +55,8 @@
   []
   (populate-lookup!)
   (->> (square-digit-sums)
-	   (map #(get @term-lookup %))
 	   (take LIMIT)
+	   (map #(get @term-lookup %))
 	   (filter #(= 89 %))
 	   count))
 
