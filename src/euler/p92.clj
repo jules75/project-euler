@@ -2,6 +2,10 @@
   (:require [euler.fns :as f]))
 
 
+; terminator lookup table for performance
+(def term-lookup (atom {1 1, 89 89}))
+
+
 (defn square-digit
   "Returns sum of the squares of every digit in n."
   [n]
@@ -13,14 +17,11 @@
   of known termination values can be provided to run faster, i.e. {1 1, 89, 89}.
   Passing an empty lookup will hang function."
   [n lookup]
+  (swap! counter inc)
   (let [m (square-digit n)
 		t (get lookup m)]
 	(if t t (recur m lookup))
 	))
-
-
-; terminator lookup table for performance
-(def term-lookup (atom {1 1, 89 89}))
 
 
 (defn populate-lookup!
@@ -37,8 +38,11 @@
   (populate-lookup!)
   (->>
    (range 1 1e7)
-   (map #(terminator % @term-lookup))
+   (map #(get @term-lookup (square-digit %)))
    (filter #(= 89 %))
    count
    ))
+
+
+(time (p92))
 
