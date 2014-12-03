@@ -10,6 +10,7 @@
 (defn fetch-words
   []
   (let [url "https://projecteuler.net/project/resources/p098_words.txt"
+		;url "p098_words.txt"
 		raw (slurp url)
 		len (count raw)]
 	(s/split (subs raw 1 (dec len)) #"\",\"")
@@ -47,42 +48,19 @@
 	  )))
 
 
-(defn all-pairs
-  "Returns all possible pairs of items, including in reverse, from collection."
-  [coll]
-  (mapcat (juxt identity reverse) (c/combinations coll 2)))
-
-
-(defn anagram?
-  "True if s1 and s2 are anagrams."
-  [s1 s2]
-  (= (sort s1) (sort s2)))
-
-
-(defn candidate?
-  "Returns true if;
-  - a and b are anagrams
-  - c and d are anagrams
-  - a and c correspond
-  - b and d correspond
-  - a/c correspondence equals b/d correspondence (e.g. ACT/529 = CAT/259)"
-  [a b c d]
-  (and (anagram? a b)
-	   (anagram? c d)
-	   (correspond? a c)
-	   (correspond? b d)
-	   (= (zipmap a c) (zipmap b d))))
-
-
 (defn p98
   []
-  (let [f #(reverse (sort-by (comp count first) (anagram-groups %)))
-		word-pairs (mapcat all-pairs (f (fetch-words)))
-		num-pairs (mapcat all-pairs (f (str-squares)))]
+  (let [pairs #(c/combinations % 2)
+		f #(mapcat pairs (anagram-groups %))
+		word-pairs (f (fetch-words))
+		num-pairs (f (str-squares))]
 	(->>
 	 (for [[a b] word-pairs
 		   [c d] num-pairs
-		   :when (candidate? a b c d)]
+		   :when (correspond? a c)
+		   :when (correspond? b d)
+		   :when (= (zipmap a c) (zipmap b d))
+		   ]
 	   [a b c d])
 	 (mapcat #(drop 2 %))
 	 set
@@ -92,3 +70,4 @@
 	 first
 	 )))
 
+;(time (p98))
