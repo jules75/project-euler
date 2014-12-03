@@ -13,9 +13,9 @@
   of known termination values can be provided to run faster, i.e. {1 1, 89, 89}.
   Passing an empty lookup will hang function."
   [n lookup]
-  (if-let [t (get lookup n)]
-	t
-	(recur (square-digit n) lookup)
+  (let [m (square-digit n)
+		t (get lookup m)]
+	(if t t (recur m lookup))
 	))
 
 
