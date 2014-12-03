@@ -7,7 +7,7 @@
 (defn fetch-words
   []
   (let [url "https://projecteuler.net/project/resources/p098_words.txt"
-		;url "p098_words.txt"
+		url "p098_words.txt"
 		raw (slurp url)
 		len (count raw)]
 	(s/split (subs raw 1 (dec len)) #"\",\"")))
@@ -24,10 +24,9 @@
 
 
 (defn str-squares
-  "Seq of squares (as strings)"
+  "Seq of squares as strings, limit 1 billion."
   []
-  (let [limit (int (Math/sqrt (Math/pow 10 9)))]
-	(map #(str (* % %)) (range limit))))
+  (map #(str (* % %)) (range (Math/sqrt 10e8))))
 
 
 (defn correspond?
@@ -49,15 +48,13 @@
 		num-pairs (f (str-squares))]
 	(reduce max
 			(for [[a b] word-pairs
-				  [c d] num-pairs
+				  [c d] (filter #(= (count a) (count (first %))) num-pairs)
 				  :when (= (count a) (count c))
 				  :when (= (zipmap a c) (zipmap b d))
 				  :when (correspond? a c)
-				  :when (correspond? b d)
-				  ]
+				  :when (correspond? b d)]
 			  (apply max (intify [c d]))
 			  ))))
 
 
 ;(time (p98))
-
