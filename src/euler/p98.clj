@@ -1,8 +1,7 @@
 (ns euler.p98
   (:require
    [clojure.string :as s]
-   [clojure.math.combinatorics :as c]
-   ))
+   [clojure.math.combinatorics :as c]))
 
 
 (defn fetch-words
@@ -11,8 +10,7 @@
 		;url "p098_words.txt"
 		raw (slurp url)
 		len (count raw)]
-	(s/split (subs raw 1 (dec len)) #"\",\"")
-	))
+	(s/split (subs raw 1 (dec len)) #"\",\"")))
 
 
 (defn anagram-groups
@@ -22,28 +20,24 @@
   (->> words
 	   (group-by #(apply str (sort %)))
 	   (filter #(> (count (last %)) 1))
-	   (map last)
-	   ))
+	   (map last)))
 
 
 (defn str-squares
   "Seq of squares (as strings)"
   []
   (let [limit (int (Math/sqrt (Math/pow 10 9)))]
-	(map #(str (* % %)) (range limit))
-	))
+	(map #(str (* % %)) (range limit))))
 
 
 (defn correspond?
-  "True if characters in both strings correspond.
-  E.g. pipes = sushi = 90914 = event != uluru"
+  "True if characters in both strings (equal length assumed) correspond.
+  E.g. pipes = sushi = 90914 = event != uluru."
   [s1 s2]
-  (when (= (count s1) (count s2))
-	(let [pairs (set (map #(str %1 %2) s1 s2))
-		  firsts (map first pairs)
-		  lasts (map last pairs)]
-	  (and (apply distinct? firsts) (apply distinct? lasts))
-	  )))
+  (let [pairs (set (map #(str %1 %2) s1 s2))
+		firsts (map first pairs)
+		lasts (map last pairs)]
+	(and (apply distinct? firsts) (apply distinct? lasts))))
 
 
 (defn p98
@@ -56,10 +50,14 @@
 	(reduce max
 			(for [[a b] word-pairs
 				  [c d] num-pairs
+				  :when (= (count a) (count c))
+				  :when (= (zipmap a c) (zipmap b d))
 				  :when (correspond? a c)
 				  :when (correspond? b d)
-				  :when (= (zipmap a c) (zipmap b d))]
+				  ]
 			  (apply max (intify [c d]))
 			  ))))
 
+
 ;(time (p98))
+
