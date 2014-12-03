@@ -24,14 +24,15 @@
 
 
 (defn populate-lookup!
-  "Populate lookup table for n up to 1000."
+  "Populate lookup table for n up to 1000. (square-digit n) always comes in
+  under 1000 when n < 1e7."
   []
   (doseq [n (range 1 1000)]
 	(swap! term-lookup #(assoc % n (terminator n @term-lookup)))
 	))
 
 
-(defn p97
+(defn p92
   []
   (populate-lookup!)
   (->>
