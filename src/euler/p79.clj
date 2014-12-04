@@ -6,12 +6,14 @@
 (def codes (-> "https://projecteuler.net/project/resources/p079_keylog.txt" slurp s/split-lines))
 
 
+; for performance
+(def make-regex (memoize #(re-pattern (apply str (interpose ".*" %)))))
+
+
 (defn inside?
   "True if every character of s2 occurs IN ORDER within s1."
   [s1 s2]
-  (let [regex (re-pattern (apply str (interpose ".*" s2)))]
-	(boolean (re-find regex s1))
-	))
+  (boolean (re-find (make-regex s2) s1)))
 
 
 (defn p79
@@ -22,8 +24,7 @@
    (for [perm (c/permutations "01236789")
 		 :let [f #(inside? (apply str perm) %)]
 		 :when (every? true? (map f codes))]
-	 (Integer/parseInt (apply str perm))
-	 )))
+	 (Integer/parseInt (apply str perm)))))
 
 
 ;(time (p79))
