@@ -21,8 +21,8 @@
   within single 3 digit group."
   []
   (first
-   (for [perm (c/permutations "01236789")
-		 :let [f #(inside? (apply str perm) %)]
+   (for [perm (map #(apply str %) (c/permutations "01236789"))
+		 :let [f #(inside? perm %)]
 		 :when (every? true? (map f codes))]
 	 (Integer/parseInt (apply str perm)))))
 
