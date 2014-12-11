@@ -4,6 +4,8 @@
 
 (def INF 9999999999)
 
+;(def counter (atom 0))
+
 
 (defn bounded?
   "True if row/col is a valid coord for tree."
@@ -106,16 +108,25 @@
   (let [h (count matrix)
 		w (count (first matrix))]
 	(->
-	 {:rows matrix
+	 {:rows (vec (map vec matrix))
 	  :visited #{[0 0]}
 	  :costs (vec (repeat h (vec (repeat w INF))))}
-	 (assoc-in [:costs 0 0] (get-in matrix [0 0]))
+	 (assoc-in [:costs 0 0] (-> matrix first first))
 	 )))
 
 
-(process (matrix->tree [[131 673 234 103 18]
-						[201 96 342 965 150]
-						[630 803 746 422 111]
-						[537 699 497 121 956]
-						[805 732 524 37 331]]))
+#_(def tree20
+  (->>
+   "https://projecteuler.net/project/resources/p082_matrix.txt"
+   slurp
+   (re-seq #"\d+")
+   (map #(Integer/parseInt %))
+   (take 400)
+   (partition 20)
+   matrix->tree
+   ))
 
+
+;(time (process tree20))
+
+;@counter
