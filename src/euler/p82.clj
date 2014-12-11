@@ -2,76 +2,116 @@
   (:require [clojure.set :refer [union intersection difference]]))
 
 
-(def data
-  [[131 673 234 103 18]
-   [201 96 342 965 150]
-   [630 803 746 422 111]
-   [537 699 497 121 956]
-   [805 732 524 37 331]])
+(def INF 9999999999)
+
+
+(defn bounded?
+  "True if row/col is a valid coord for tree."
+  [tree [row col]]
+  (and
+   (< -1 row (count (:rows tree)))
+   (< -1 col (count (first (:rows tree))))))
+
+
+(defn unvisited?
+  "True if row/col is not visited."
+  [tree [row col]]
+  (not (some #{[row col]} (:visited tree))))
 
 
 (defn neighbours
-  [edges node]
-  (->> edges
-	   (filter #(some #{node} %))
-	   flatten
-	   (remove #{node})
-	   set))
+  "Returns neighbour coords of row/col"
+  [tree [row col]]
+  (let [coords #{[(dec row) col] [(inc row) col] [row (dec col)] [row (inc col)]}]
+	(filter (partial bounded? tree) coords)))
 
 
-(defn add-score
-  "Returns tree with node's score increased by n.
-  Creates node score if needed."
-  [tree node n]
-  (let [m (get-in tree [:scores node])
-		newval (if m (+ n m) (+ n (get-in tree [:nodes node])))]
-	(assoc-in tree [:scores node] newval)
-	))
+(defn value
+  [tree [row col]]
+  (get-in tree [:rows row col]))
+
+
+(defn cost
+  [tree [row col]]
+  (get-in tree [:costs row col]))
+
+
+(defn candidate-nodes
+  "Find all visited nodes with unvisited neighbours.
+  Returns map with node/neighbours entries."
+  [tree]
+  (into {}
+		(let [visited (:visited tree)
+			  neighbs (map (partial neighbours tree) visited)
+			  nmap (zipmap visited (map #(filter (partial unvisited? tree) %) neighbs))]
+		  (remove #(empty? (val %)) nmap)
+		  )))
+
+
+(defn update-costs
+  "Returns tree with costs updated.
+  Example score-map -> {[0 1] 804, [1 0] 332}"
+  [tree score-map]
+  (if (seq score-map)
+	(let [[[row col] cost] (first score-map)]
+	  (recur
+	   (assoc-in tree [:costs row col] cost)
+	   (rest score-map)))
+	tree))
 
 
 (defn mark-visited
-  "Returns tree with node marked as visited."
-  [tree node]
-  (update-in tree [:visited] #(conj % node)))
+  "Return tree with nodes (as coords) marked as visited."
+  [tree nodes]
+  (if (seq nodes)
+	(recur
+	 (update-in tree [:visited] #(conj % (first nodes)))
+	 (rest nodes))
+	tree))
 
 
-(defn unvisited-neighbours
-  "Returns set of all unvisited neighbours in tree."
+(defn complete?
+  "True if tree if all nodes visited."
   [tree]
-  (let [v (:visited tree)
-		f #(neighbours (:edges tree) %)]
-	(difference (apply union (map f v)) v)))
+  (= (count (:visited tree)) (count (flatten (:rows tree)))))
 
 
-(defn visited?
-  "True if all nodes in tree are visited."
+(defn process-one
   [tree]
-  (= (count (:visited tree)) (count (:nodes tree))))
+  (let [f (partial cost tree)
+		g (partial value tree)
+		candidates (candidate-nodes tree) 							; visited nodes with unvisited neighbours
+		node (first (sort-by #(f (key %)) candidates)) 				; cheapeast node (TODO: use reducer for better performance)
+		neighbs (val node)
+		new-scores 	(map #(min (f %) (+ (f (key node)) (g %))) neighbs)
+		]
+	(-> tree
+		(update-costs (zipmap neighbs new-scores))
+		(mark-visited neighbs)
+		)))
 
 
-(defn dijkstra
+(defn process
   [tree]
-  (if (visited? tree)
+  (if (complete? tree)
 	tree
-	(let [node (first (unvisited-neighbours tree))
-		  neighbs (neighbours (:edges tree) node)
-		  visited (intersection neighbs (:visited tree))
-		  min-score (apply min (vals (select-keys (:scores tree) visited)))
-		  _ (println tree)
-		  _ (println node neighbs visited min-score)
-		  ]
-	  (recur (-> tree (add-score node min-score) (mark-visited node)))
-	  )))
+	(recur (process-one tree))
+	))
 
 
+(def tree1 {
+			:rows [[131 673 234]
+				   [201 96 342]
+				   [630 803 746]]
 
-(def data
-  {:nodes {:a 5 :b 7 :c 12 :d 9 :e 3}
-   :edges #{[:a :b] [:c :a] [:b :c] [:b :d] [:c :e] [:d :e]}
-   :visited #{:a :b}
-   :scores {:a 5 :b 12}
-   })
+			:visited #{[0 0]}
+
+			:costs [[131 INF INF]
+					[INF INF INF]
+					[INF INF INF]]
+
+			})
 
 
-(dijkstra data)
+(process tree1)
 
