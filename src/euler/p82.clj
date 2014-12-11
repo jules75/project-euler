@@ -38,7 +38,7 @@
 
 (defn candidate-nodes
   "Find all visited nodes with unvisited neighbours.
-  Returns map with node/neighbours entries."
+  Returns map of node/neighbours entries."
   [tree]
   (into {}
 		(let [visited (:visited tree)
@@ -99,19 +99,23 @@
 	))
 
 
-(def tree1 {
-			:rows [[131 673 234]
-				   [201 96 342]
-				   [630 803 746]]
+(defn matrix->tree
+  "Returns cost tree representation of matrix, assumes top
+  left cell as origin."
+  [matrix]
+  (let [h (count matrix)
+		w (count (first matrix))]
+	(->
+	 {:rows matrix
+	  :visited #{[0 0]}
+	  :costs (vec (repeat h (vec (repeat w INF))))}
+	 (assoc-in [:costs 0 0] (get-in matrix [0 0]))
+	 )))
 
-			:visited #{[0 0]}
 
-			:costs [[131 INF INF]
-					[INF INF INF]
-					[INF INF INF]]
-
-			})
-
-
-(process tree1)
+(process (matrix->tree [[131 673 234 103 18]
+						[201 96 342 965 150]
+						[630 803 746 422 111]
+						[537 699 497 121 956]
+						[805 732 524 37 331]]))
 
