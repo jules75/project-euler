@@ -7,14 +7,6 @@
 ;(def counter (atom 0))
 
 
-(defn bounded?
-  "True if row/col is a valid coord for tree."
-  [tree [row col]]
-  (and
-   (< -1 row (count (:rows tree)))
-   (< -1 col (count (first (:rows tree))))))
-
-
 (defn unvisited?
   "True if row/col is not visited."
   [tree [row col]]
@@ -23,9 +15,13 @@
 
 (defn neighbours
   "Returns neighbour coords of row/col"
-  [tree [row col]]
-  (let [coords #{[(dec row) col] [(inc row) col] [row (dec col)] [row (inc col)]}]
-	(filter (partial bounded? tree) coords)))
+  [height width [row col]]
+  (let [bounded? (fn [h w [r c]] (and (< -1 r h) (< -1 c w)))
+		coords #{[(dec row) col] [(inc row) col] [row (dec col)] [row (inc col)]}]
+	(filter #(bounded? height width %) coords)))
+
+
+(def neighbours+ (memoize neighbours))
 
 
 (defn value
@@ -44,7 +40,9 @@
   [tree]
   (into {}
 		(let [visited (:visited tree)
-			  neighbs (map (partial neighbours tree) visited)
+			  height (count (:rows tree))
+				width (count (first (:rows tree)))
+			  neighbs (map #(neighbours+ height width %) visited)
 			  nmap (zipmap visited (map #(filter (partial unvisited? tree) %) neighbs))]
 		  (remove #(empty? (val %)) nmap)
 		  )))
@@ -127,6 +125,6 @@
    ))
 
 
-;(time (process tree20))
+(time (process tree20))
 
-;@counter
+@counter
