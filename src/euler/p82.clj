@@ -2,9 +2,11 @@
   (:require [clojure.set :refer [union intersection difference]]))
 
 
-(def INF 9999999999)
+(require '[taoensso.timbre.profiling :as profiling
+		   :refer (pspy pspy* profile defnp p p*)])
 
-;(def counter (atom 0))
+
+(def INF 9999999999)
 
 
 (defn neighbours
@@ -28,17 +30,25 @@
   (get-in tree [:costs row col]))
 
 
+(defn unvisited-neighbours
+  [height width visited coord]
+  (p :unvisited-neighbours
+	 (difference (set (neighbours+ height width coord)) visited)
+	 ))
+
+
 (defn candidate-nodes
-  "Find all visited nodes with unvisited neighbours.
+  "Find all visited nodes and their unvisited neighbours.
   Returns map of node/neighbours entries."
   [tree]
   (into {}
 		(let [visited (:visited tree)
-			  height (count (:rows tree))
-			  width (count (first (:rows tree)))
-			  neighbs (map #(difference (set (neighbours+ height width %)) (:visited tree)) visited)
-			  nmap (zipmap visited neighbs)]
-		  (remove #(empty? (val %)) nmap)
+			  rows (:rows tree)
+			  height (count rows)
+			  width (count (first rows))
+			  f (partial unvisited-neighbours height width visited)
+			  nmap (map (juxt identity f) visited)]
+		  (remove #(empty? (last %)) nmap)
 		  )))
 
 
@@ -107,19 +117,32 @@
 	 )))
 
 
-#_(def tree20
+#_(def tree35
 	(->>
 	 "https://projecteuler.net/project/resources/p082_matrix.txt"
 	 slurp
 	 (re-seq #"\d+")
 	 (map #(Integer/parseInt %))
-	 (take 400)
-	 (partition 20)
+	 (take (* 35 35))
+	 (partition 35)
 	 matrix->tree
 	 ))
 
 
-(time (process tree20))
+#_(def tree5
+  [[131 673 234 103 18]
+   [201 96 342 965 150]
+   [630 803 746 422 111]
+   [537 699 497 121 956]
+   [805 732 524 37 331]])
 
-;@counter
-; 108221
+
+;(-> tree5 matrix->tree process-one)
+
+
+;(defn main [] (process tree35))
+
+;(profile :info :Arithmetic (main))
+
+; 176071
+
