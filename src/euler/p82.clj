@@ -7,12 +7,6 @@
 ;(def counter (atom 0))
 
 
-(defn unvisited?
-  "True if row/col is not visited."
-  [tree [row col]]
-  (not (some #{[row col]} (:visited tree))))
-
-
 (defn neighbours
   "Returns neighbour coords of row/col"
   [height width [row col]]
@@ -41,9 +35,9 @@
   (into {}
 		(let [visited (:visited tree)
 			  height (count (:rows tree))
-				width (count (first (:rows tree)))
-			  neighbs (map #(neighbours+ height width %) visited)
-			  nmap (zipmap visited (map #(filter (partial unvisited? tree) %) neighbs))]
+			  width (count (first (:rows tree)))
+			  neighbs (map #(difference (set (neighbours+ height width %)) (:visited tree)) visited)
+			  nmap (zipmap visited neighbs)]
 		  (remove #(empty? (val %)) nmap)
 		  )))
 
@@ -114,17 +108,18 @@
 
 
 #_(def tree20
-  (->>
-   "https://projecteuler.net/project/resources/p082_matrix.txt"
-   slurp
-   (re-seq #"\d+")
-   (map #(Integer/parseInt %))
-   (take 400)
-   (partition 20)
-   matrix->tree
-   ))
+	(->>
+	 "https://projecteuler.net/project/resources/p082_matrix.txt"
+	 slurp
+	 (re-seq #"\d+")
+	 (map #(Integer/parseInt %))
+	 (take 400)
+	 (partition 20)
+	 matrix->tree
+	 ))
 
 
 (time (process tree20))
 
-@counter
+;@counter
+; 108221
