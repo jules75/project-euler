@@ -26,7 +26,7 @@
   (get-in tree [:rows row col]))
 
 
-(defn cost
+(defn get-cost
   [tree [row col]]
   (get-in tree [:costs row col]))
 
@@ -102,13 +102,13 @@
 (defn cheapest
   [tree nodes]
   (p :cheapest
-	 (first (sort-by #(cost tree (key %)) nodes))
+	 (first (sort-by #(get-cost tree (key %)) nodes))
 	 ))
 
 
 (defn process-one
   [tree]
-  (let [f (partial cost tree)
+  (let [f (partial get-cost tree)
 		g (partial value tree)
 		candidates (candidate-nodes tree) 							; visited nodes with unvisited neighbours
 		node (cheapest tree candidates)
@@ -146,7 +146,7 @@
 	 )))
 
 
-#_(def tree45
+(def tree45
   (->>
    "https://projecteuler.net/project/resources/p082_matrix.txt"
    slurp
