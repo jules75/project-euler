@@ -6,7 +6,7 @@
 		   :refer (pspy pspy* profile defnp p p*)])
 
 
-(def INF 9999999999)
+(def INF Double/POSITIVE_INFINITY)
 
 
 (def neighbours
