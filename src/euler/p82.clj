@@ -23,7 +23,8 @@
 
 (defn value
   [tree [row col]]
-  (get-in tree [:rows row col]))
+  (p :value
+	 (get-in tree [:rows row col])))
 
 
 (defn get-cost
@@ -63,7 +64,7 @@
   (if (seq score-map)
 	(let [[[row col] cost] (first score-map)]
 	  (recur
-	   (assoc-in tree [:costs row col] cost)
+	   (p :update-costs-recur (assoc-in tree [:costs row col] cost))
 	   (rest score-map)))
 	tree))
 
@@ -73,7 +74,7 @@
   [tree nodes]
   (if (seq nodes)
 	(recur
-	 (update-in tree [:visited] #(conj % (first nodes)))
+	 (p :mark-visited-recur (update-in tree [:visited] #(conj % (first nodes))))
 	 (rest nodes))
 	tree))
 
@@ -83,7 +84,7 @@
   [tree nodes]
   (if (seq nodes)
 	(recur
-	 (update-in tree [:to-visit] #(conj % (first nodes)))
+	 (p :mark-to-visit-recur (update-in tree [:to-visit] #(conj % (first nodes))))
 	 (rest nodes))
 	tree))
 
@@ -91,13 +92,15 @@
 (defn remove-to-visit
   "Remove node from to-visit list."
   [tree node]
-  (update-in tree [:to-visit] #(difference % (set [node]))))
+  (p :remove-to-visit
+	 (update-in tree [:to-visit] #(difference % (set [node])))))
 
 
 (defn complete?
   "True if tree if all nodes visited."
   [tree]
-  (not-any? #{INF} (flatten (:costs tree))))
+  (p :complete?
+	 (not-any? #{INF} (flatten (:costs tree)))))
 
 
 (defn cheapest
@@ -114,19 +117,20 @@
 
 (defn process-one
   [tree]
-  (let [f (partial get-cost tree)
-		g (partial value tree)
-		candidates (candidate-nodes tree) 							; visited nodes with unvisited neighbours
-		node (cheapest tree candidates)
-		neighbs (val node)
-		new-scores 	(map #(min (f %) (+ (f (key node)) (g %))) neighbs)
-		]
-	(-> tree
-		(update-costs (zipmap neighbs new-scores))
-		(mark-visited [(key node)])
-		(remove-to-visit (key node))
-		(mark-to-visit neighbs)
-		)))
+  (p :process-one
+	 (let [f (partial get-cost tree)
+		   g (partial value tree)
+		   candidates (candidate-nodes tree) 							; visited nodes with unvisited neighbours
+		   node (cheapest tree candidates)
+		   neighbs (val node)
+		   new-scores 	(map #(min (f %) (+ (f (key node)) (g %))) neighbs)
+		   ]
+	   (-> tree
+		   (update-costs (zipmap neighbs new-scores))
+		   (mark-visited [(key node)])
+		   (remove-to-visit (key node))
+		   (mark-to-visit neighbs)
+		   ))))
 
 
 (defn process
@@ -152,20 +156,24 @@
 	 )))
 
 
-(def tree45
+(def tree80
   (->>
    "https://projecteuler.net/project/resources/p082_matrix.txt"
    slurp
    (re-seq #"\d+")
    (map #(Integer/parseInt %))
-   (take (* 45 45))
-   (partition 45)
+   ;(take (* 70 70))
+   (partition 80)
    matrix->tree
    ))
 
 
-(defn main [] (-> tree45 process :costs last last))
+(defn main [] (-> tree80 process :costs last last))
 
 (profile :info :Arithmetic (main))
 
 ; 45 -> 225615
+; 50 -> 254220
+; 60 -> 300190
+; 70 -> 368598
+; 80 -> 425185
