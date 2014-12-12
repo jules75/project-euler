@@ -48,7 +48,7 @@
   [tree]
   (p :candidate-nodes
 	 (into {}
-		   (let [f (partial unvisited-neighbours tree)]
+		   (let [f #(unvisited-neighbours tree %)]
 			 (map (juxt identity f) (:to-visit tree))
 			 ))))
 
@@ -107,14 +107,12 @@
 
 
 (defn cheapest
-  "Given map of node/subnodes entries, returns entry with lowest cost node."
-  [tree node-map]
-  (p :cheapest
-	 (let [nodes (keys node-map)
-		   cost-map (zipmap nodes (map #(get-in (:costs tree) %) nodes))
+  [tree nodes]
+  (p :cheapest-node
+	 (let [cost-map (zipmap nodes (map #(get-in (:costs tree) %) nodes))
 		   f #(if (< (val %1) (val %2)) %1 %2)
 		   best (first (reduce f cost-map))]
-	   (first (filter #(= best (key %)) node-map))
+	   (first (filter #(= best %) nodes))
 	   )))
 
 
@@ -123,17 +121,17 @@
   (p :process-one
 	 (let [f (partial get-cost tree)
 		   g (partial value tree)
-		   candidates (candidate-nodes tree) 							; visited nodes with unvisited neighbours
+		   candidates (:to-visit tree)
 		   node (cheapest tree candidates)
-		   neighbs (val node)
-		   new-scores 	(map #(min (f %) (+ (f (key node)) (g %))) neighbs)
+		   neighbs (unvisited-neighbours tree node)
+		   new-scores (map #(min (f %) (+ (f node) (g %))) neighbs)
 		   ]
 	   (-> tree
 		   (update-costs (zipmap neighbs new-scores))
-		   (mark-visited [(key node)])
-		   (remove-to-visit (key node))
+		   (mark-visited [node])
+		   (remove-to-visit node)
 		   (mark-to-visit neighbs)
-		   (remove-unvisited (union #{(key node)} neighbs))
+		   (remove-unvisited (union #{node} neighbs))
 		   ))))
 
 
@@ -162,19 +160,19 @@
 	 )))
 
 
-(def tree45
+(def tree80
   (->>
    "https://projecteuler.net/project/resources/p082_matrix.txt"
    slurp
    (re-seq #"\d+")
    (map #(Integer/parseInt %))
-   (take (* 45 45))
-   (partition 45)
+   ;(take (* 45 45))
+   (partition 80)
    matrix->tree
    ))
 
 
-(defn main [] (-> tree45 process :costs last last))
+(defn main [] (-> tree80 process :costs last last))
 
 (profile :info :Arithmetic (main))
 
