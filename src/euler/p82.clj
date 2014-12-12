@@ -31,9 +31,9 @@
 
 
 (defn unvisited-neighbours
-  [height width visited coord]
+  [height width visited to-visit coord]
   (p :unvisited-neighbours
-	 (difference (set (neighbours+ height width coord)) visited)
+	 (difference (set (neighbours+ height width coord)) visited to-visit)
 	 ))
 
 
@@ -43,11 +43,12 @@
   [tree]
   (into {}
 		(let [visited (:visited tree)
+			  to-visit (:to-visit tree)
 			  rows (:rows tree)
 			  height (count rows)
 			  width (count (first rows))
-			  f (partial unvisited-neighbours height width visited)
-			  nmap (map (juxt identity f) visited)]
+			  f (partial unvisited-neighbours height width visited to-visit)
+			  nmap (map (juxt identity f) to-visit)]
 		  (remove #(empty? (last %)) nmap)
 		  )))
 
@@ -74,10 +75,26 @@
 	tree))
 
 
+(defn mark-to-visit
+  "Return tree with nodes (as coords) marked as to-visit."
+  [tree nodes]
+  (if (seq nodes)
+	(recur
+	 (update-in tree [:to-visit] #(conj % (first nodes)))
+	 (rest nodes))
+	tree))
+
+
+(defn remove-to-visit
+  "Remove node from to-visit list."
+  [tree node]
+  (update-in tree [:to-visit] #(difference % (set [node]))))
+
+
 (defn complete?
   "True if tree if all nodes visited."
   [tree]
-  (= (count (:visited tree)) (count (flatten (:rows tree)))))
+  (not-any? #{INF} (flatten (:costs tree))))
 
 
 (defn process-one
@@ -91,7 +108,9 @@
 		]
 	(-> tree
 		(update-costs (zipmap neighbs new-scores))
-		(mark-visited neighbs)
+		(mark-visited [(key node)])
+		(remove-to-visit (key node))
+		(mark-to-visit neighbs)
 		)))
 
 
@@ -111,13 +130,14 @@
 		w (count (first matrix))]
 	(->
 	 {:rows (vec (map vec matrix))
-	  :visited #{[0 0]}
+	  :to-visit #{[0 0]}
+	  :visited #{}
 	  :costs (vec (repeat h (vec (repeat w INF))))}
 	 (assoc-in [:costs 0 0] (-> matrix first first))
 	 )))
 
 
-#_(def tree35
+(def tree35
 	(->>
 	 "https://projecteuler.net/project/resources/p082_matrix.txt"
 	 slurp
@@ -129,20 +149,8 @@
 	 ))
 
 
-#_(def tree5
-  [[131 673 234 103 18]
-   [201 96 342 965 150]
-   [630 803 746 422 111]
-   [537 699 497 121 956]
-   [805 732 524 37 331]])
+(defn main [] (process tree35))
 
-
-;(-> tree5 matrix->tree process-one)
-
-
-;(defn main [] (process tree35))
-
-;(profile :info :Arithmetic (main))
+(profile :info :Arithmetic (main))
 
 ; 176071
-
