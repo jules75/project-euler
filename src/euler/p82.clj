@@ -28,7 +28,8 @@
 
 (defn get-cost
   [tree [row col]]
-  (get-in tree [:costs row col]))
+  (p :get-cost
+  (get-in tree [:costs row col])))
 
 
 (defn unvisited-neighbours
@@ -100,9 +101,10 @@
 
 
 (defn cheapest
-  [tree nodes]
+  "Given map of node/subnodes entries, returns entry with lowest cost node."
+  [tree node-map]
   (p :cheapest
-	 (first (sort-by #(get-cost tree (key %)) nodes))
+	 (first (sort-by #(get-cost tree (key %)) node-map))
 	 ))
 
 
@@ -162,4 +164,4 @@
 
 (profile :info :Arithmetic (main))
 
-; 225615
+; 45 -> 225615
