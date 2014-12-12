@@ -12,9 +12,10 @@
 (defn neighbours
   "Returns neighbour coords of row/col"
   [height width [row col]]
-  (let [bounded? (fn [h w [r c]] (and (< -1 r h) (< -1 c w)))
-		coords #{[(dec row) col] [(inc row) col] [row (dec col)] [row (inc col)]}]
-	(filter #(bounded? height width %) coords)))
+  (p :neighbours
+	 (let [bounded? (fn [h w [r c]] (and (< -1 r h) (< -1 c w)))
+		   coords #{[(dec row) col] [(inc row) col] [row (dec col)] [row (inc col)]}]
+	   (filter #(bounded? height width %) coords))))
 
 
 (def neighbours+ (memoize neighbours))
@@ -31,9 +32,9 @@
 
 
 (defn unvisited-neighbours
-  [height width visited to-visit coord]
+  [height width excluded-nodes coord]
   (p :unvisited-neighbours
-	 (difference (set (neighbours+ height width coord)) visited to-visit)
+	 (difference (set (neighbours+ height width coord)) excluded-nodes)
 	 ))
 
 
@@ -41,16 +42,17 @@
   "Find all visited nodes and their unvisited neighbours.
   Returns map of node/neighbours entries."
   [tree]
-  (into {}
-		(let [visited (:visited tree)
-			  to-visit (:to-visit tree)
-			  rows (:rows tree)
-			  height (count rows)
-			  width (count (first rows))
-			  f (partial unvisited-neighbours height width visited to-visit)
-			  nmap (map (juxt identity f) to-visit)]
-		  (remove #(empty? (last %)) nmap)
-		  )))
+  (p :candidate-nodes
+	 (into {}
+		   (let [visited (:visited tree)
+				 to-visit (:to-visit tree)
+				 rows (:rows tree)
+				 height (count rows)
+				 width (count (first rows))
+				 f (partial unvisited-neighbours height width (union visited to-visit))
+				 ]
+			 (map (juxt identity f) to-visit)
+			 ))))
 
 
 (defn update-costs
@@ -97,12 +99,19 @@
   (not-any? #{INF} (flatten (:costs tree))))
 
 
+(defn cheapest
+  [tree nodes]
+  (p :cheapest
+	 (first (sort-by #(cost tree (key %)) nodes))
+	 ))
+
+
 (defn process-one
   [tree]
   (let [f (partial cost tree)
 		g (partial value tree)
 		candidates (candidate-nodes tree) 							; visited nodes with unvisited neighbours
-		node (first (sort-by #(f (key %)) candidates)) 				; cheapeast node (TODO: use reducer for better performance)
+		node (cheapest tree candidates)
 		neighbs (val node)
 		new-scores 	(map #(min (f %) (+ (f (key node)) (g %))) neighbs)
 		]
@@ -137,20 +146,20 @@
 	 )))
 
 
-(def tree35
-	(->>
-	 "https://projecteuler.net/project/resources/p082_matrix.txt"
-	 slurp
-	 (re-seq #"\d+")
-	 (map #(Integer/parseInt %))
-	 (take (* 35 35))
-	 (partition 35)
-	 matrix->tree
-	 ))
+#_(def tree45
+  (->>
+   "https://projecteuler.net/project/resources/p082_matrix.txt"
+   slurp
+   (re-seq #"\d+")
+   (map #(Integer/parseInt %))
+   (take (* 45 45))
+   (partition 45)
+   matrix->tree
+   ))
 
 
-(defn main [] (process tree35))
+(defn main [] (-> tree45 process :costs last last))
 
 (profile :info :Arithmetic (main))
 
-; 176071
+; 225615
