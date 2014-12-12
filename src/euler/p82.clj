@@ -100,7 +100,7 @@
   "True if tree if all nodes visited."
   [tree]
   (p :complete?
-	 (not-any? #{INF} (flatten (:costs tree)))))
+	 (every? true? (map #(not-any? #{INF} %) (:costs tree)))))
 
 
 (defn cheapest
