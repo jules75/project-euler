@@ -103,7 +103,8 @@
   "True if tree if all nodes visited."
   [tree]
   (p :complete?
-	 (every? true? (map #(not-any? #{INF} %) (:costs tree)))))
+	 (empty? (:unvisited tree))
+	 ))
 
 
 (defn cheapest
@@ -166,7 +167,6 @@
    slurp
    (re-seq #"\d+")
    (map #(Integer/parseInt %))
-   ;(take (* 45 45))
    (partition 80)
    matrix->tree
    ))
