@@ -9,16 +9,16 @@
 (def INF 9999999999)
 
 
-(defn neighbours
-  "Returns neighbour coords of row/col"
-  [height width [row col]]
-  (p :neighbours
-	 (let [bounded? (fn [h w [r c]] (and (< -1 r h) (< -1 c w)))
-		   coords #{[(dec row) col] [(inc row) col] [row (dec col)] [row (inc col)]}]
-	   (filter #(bounded? height width %) coords))))
-
-
-(def neighbours+ (memoize neighbours))
+(def neighbours
+; "Returns neighbour coords of row/col"
+  (memoize
+   (fn
+	 [height width [row col]]
+	 (p :neighbours
+		(let [bounded? (fn [h w [r c]] (and (< -1 r h) (< -1 c w)))
+			  coords #{[(dec row) col] [(inc row) col] [row (dec col)] [row (inc col)]}]
+		  (filter #(bounded? height width %) coords)
+		  )))))
 
 
 (defn value
@@ -36,7 +36,7 @@
 (defn unvisited-neighbours
   [height width excluded-nodes coord]
   (p :unvisited-neighbours
-	 (difference (set (neighbours+ height width coord)) excluded-nodes)
+	 (difference (set (neighbours height width coord)) excluded-nodes)
 	 ))
 
 
