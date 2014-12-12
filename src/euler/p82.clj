@@ -29,7 +29,7 @@
 (defn get-cost
   [tree [row col]]
   (p :get-cost
-  (get-in tree [:costs row col])))
+	 (get-in tree [:costs row col])))
 
 
 (defn unvisited-neighbours
@@ -104,8 +104,12 @@
   "Given map of node/subnodes entries, returns entry with lowest cost node."
   [tree node-map]
   (p :cheapest
-	 (first (sort-by #(get-cost tree (key %)) node-map))
-	 ))
+	 (let [nodes (keys node-map)
+		   cost-map (zipmap nodes (map #(get-in (:costs tree) %) nodes))
+		   f #(if (< (val %1) (val %2)) %1 %2)
+		   best (first (reduce f cost-map))]
+	   (first (filter #(= best (key %)) node-map))
+	   )))
 
 
 (defn process-one
