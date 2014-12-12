@@ -99,14 +99,6 @@
 	 ))
 
 
-(defn complete?
-  "True if tree if all nodes visited."
-  [tree]
-  (p :complete?
-	 (empty? (:unvisited tree))
-	 ))
-
-
 (defn cheapest
   [tree nodes]
   (p :cheapest-node
@@ -138,7 +130,7 @@
 
 (defn process
   [tree]
-  (if (complete? tree)
+  (if (empty? (:unvisited tree))
 	tree
 	(recur (process-one tree))
 	))
