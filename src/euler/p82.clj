@@ -10,7 +10,7 @@
 
 
 (def neighbours
-; "Returns neighbour coords of row/col"
+  ; "Returns neighbour coords of row/col"
   (memoize
    (fn
 	 [height width [row col]]
@@ -34,10 +34,12 @@
 
 
 (defn unvisited-neighbours
-  [height width excluded-nodes coord]
+  [tree node]
   (p :unvisited-neighbours
-	 (difference (set (neighbours height width coord)) excluded-nodes)
-	 ))
+	 (let [height (count (:rows tree))
+		   width (count (first (:rows tree)))]
+	   (intersection (set (neighbours height width node)) (:unvisited tree))
+	   )))
 
 
 (defn candidate-nodes
@@ -46,14 +48,8 @@
   [tree]
   (p :candidate-nodes
 	 (into {}
-		   (let [visited (:visited tree)
-				 to-visit (:to-visit tree)
-				 rows (:rows tree)
-				 height (count rows)
-				 width (count (first rows))
-				 f (partial unvisited-neighbours height width (union visited to-visit))
-				 ]
-			 (map (juxt identity f) to-visit)
+		   (let [f (partial unvisited-neighbours tree)]
+			 (map (juxt identity f) (:to-visit tree))
 			 ))))
 
 
@@ -96,6 +92,13 @@
 	 (update-in tree [:to-visit] #(difference % (set [node])))))
 
 
+(defn remove-unvisited
+  [tree nodes]
+  (p :remove-unvisited
+	 (assoc tree :unvisited (difference (:unvisited tree) nodes))
+	 ))
+
+
 (defn complete?
   "True if tree if all nodes visited."
   [tree]
@@ -130,6 +133,7 @@
 		   (mark-visited [(key node)])
 		   (remove-to-visit (key node))
 		   (mark-to-visit neighbs)
+		   (remove-unvisited (union #{(key node)} neighbs))
 		   ))))
 
 
@@ -146,29 +150,31 @@
   left cell as origin."
   [matrix]
   (let [h (count matrix)
-		w (count (first matrix))]
+		w (count (first matrix))
+		all-nodes (set (for [a (range h) b (range w)] [a b]))]
 	(->
 	 {:rows (vec (map vec matrix))
 	  :to-visit #{[0 0]}
 	  :visited #{}
 	  :costs (vec (repeat h (vec (repeat w INF))))}
 	 (assoc-in [:costs 0 0] (-> matrix first first))
+	 (assoc :unvisited (difference all-nodes #{[0 0]}))
 	 )))
 
 
-(def tree80
+(def tree45
   (->>
    "https://projecteuler.net/project/resources/p082_matrix.txt"
    slurp
    (re-seq #"\d+")
    (map #(Integer/parseInt %))
-   ;(take (* 70 70))
-   (partition 80)
+   (take (* 45 45))
+   (partition 45)
    matrix->tree
    ))
 
 
-(defn main [] (-> tree80 process :costs last last))
+(defn main [] (-> tree45 process :costs last last))
 
 (profile :info :Arithmetic (main))
 
