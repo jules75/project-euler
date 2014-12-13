@@ -18,12 +18,6 @@
 		  )))))
 
 
-(defn get-cost
-  [tree [row col]]
-  (p :get-cost
-	 (get-in tree [:costs row col])))
-
-
 (defn unvisited-neighbours
   [tree node]
   (p :unvisited-neighbours
@@ -31,17 +25,6 @@
 		   width (count (first (:rows tree)))]
 	   (intersection (set (neighbours height width node)) (:unvisited tree))
 	   )))
-
-
-(defn candidate-nodes
-  "Find all visited nodes and their unvisited neighbours.
-  Returns map of node/neighbours entries."
-  [tree]
-  (p :candidate-nodes
-	 (into {}
-		   (let [f #(unvisited-neighbours tree %)]
-			 (map (juxt identity f) (:to-visit tree))
-			 ))))
 
 
 (defn update-costs
@@ -103,11 +86,12 @@
 (defn process-one
   [tree]
   (p :process-one
-	 (let [value (fn [tree [row col]] (get-in tree [:rows row col]))
+	 (let [get-value (fn [tree [row col]] (get-in tree [:rows row col]))
+		   get-cost (fn [tree [row col]] (get-in tree [:costs row col]))
 		   candidates (:to-visit tree)
 		   node (cheapest tree candidates)
 		   neighbs (unvisited-neighbours tree node)
-		   f #(min (get-cost tree %) (+ (get-cost tree node) (value tree %)))
+		   f #(min (get-cost tree %) (+ (get-cost tree node) (get-value tree %)))
 		   new-scores (map f neighbs)
 		   ]
 	   (-> tree
