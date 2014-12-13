@@ -39,23 +39,14 @@
 	tree))
 
 
-(defn mark-visited
-  "Return tree with nodes (as coords) marked as visited."
-  [tree nodes]
+(defn mark-nodes
+  "Return tree with nodes (as coords) marked as 'category'."
+  [tree nodes category]
   (if (seq nodes)
 	(recur
-	 (p :mark-visited-recur (update-in tree [:visited] #(conj % (first nodes))))
-	 (rest nodes))
-	tree))
-
-
-(defn mark-to-visit
-  "Return tree with nodes (as coords) marked as to-visit."
-  [tree nodes]
-  (if (seq nodes)
-	(recur
-	 (p :mark-to-visit-recur (update-in tree [:to-visit] #(conj % (first nodes))))
-	 (rest nodes))
+	 (p :mark-nodes-recur (update-in tree [category] #(conj % (first nodes))))
+	 (rest nodes)
+	 category)
 	tree))
 
 
@@ -96,9 +87,9 @@
 		   ]
 	   (-> tree
 		   (update-costs (zipmap neighbs new-scores))
-		   (mark-visited [node])
+		   (mark-nodes [node] :visited)
 		   (remove-to-visit node)
-		   (mark-to-visit neighbs)
+		   (mark-nodes neighbs :to-visit)
 		   (remove-unvisited (union #{node} neighbs))
 		   ))))
 
@@ -129,14 +120,14 @@
 
 
 #_(def tree80
-  (->>
-   "https://projecteuler.net/project/resources/p082_matrix.txt"
-   slurp
-   (re-seq #"\d+")
-   (map #(Integer/parseInt %))
-   (partition 80)
-   matrix->tree
-   ))
+	(->>
+	 "https://projecteuler.net/project/resources/p082_matrix.txt"
+	 slurp
+	 (re-seq #"\d+")
+	 (map #(Integer/parseInt %))
+	 (partition 80)
+	 matrix->tree
+	 ))
 
 
 (defn main [] (-> tree80 process :costs last last))
