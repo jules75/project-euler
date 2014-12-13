@@ -6,9 +6,6 @@
 		   :refer (pspy pspy* profile defnp p p*)])
 
 
-(def INF Double/POSITIVE_INFINITY)
-
-
 (def neighbours
   ; "Returns neighbour coords of row/col"
   (memoize
@@ -19,12 +16,6 @@
 			  coords #{[(dec row) col] [(inc row) col] [row (dec col)] [row (inc col)]}]
 		  (filter #(bounded? height width %) coords)
 		  )))))
-
-
-(defn value
-  [tree [row col]]
-  (p :value
-	 (get-in tree [:rows row col])))
 
 
 (defn get-cost
@@ -112,12 +103,12 @@
 (defn process-one
   [tree]
   (p :process-one
-	 (let [f (partial get-cost tree)
-		   g (partial value tree)
+	 (let [value (fn [tree [row col]] (get-in tree [:rows row col]))
+		   f (partial get-cost tree)
 		   candidates (:to-visit tree)
 		   node (cheapest tree candidates)
 		   neighbs (unvisited-neighbours tree node)
-		   new-scores (map #(min (f %) (+ (f node) (g %))) neighbs)
+		   new-scores (map #(min (f %) (+ (f node) (value tree %))) neighbs)
 		   ]
 	   (-> tree
 		   (update-costs (zipmap neighbs new-scores))
@@ -147,13 +138,13 @@
 	 {:rows (vec (map vec matrix))
 	  :to-visit #{[0 0]}
 	  :visited #{}
-	  :costs (vec (repeat h (vec (repeat w INF))))}
+	  :costs (vec (repeat h (vec (repeat w Double/POSITIVE_INFINITY))))}
 	 (assoc-in [:costs 0 0] (-> matrix first first))
 	 (assoc :unvisited (difference all-nodes #{[0 0]}))
 	 )))
 
 
-(def tree80
+#_(def tree80
   (->>
    "https://projecteuler.net/project/resources/p082_matrix.txt"
    slurp
