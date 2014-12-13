@@ -2,29 +2,23 @@
   (:require [clojure.set :refer [union intersection difference]]))
 
 
-(require '[taoensso.timbre.profiling :as profiling
-		   :refer (pspy pspy* profile defnp p p*)])
-
-
 (def neighbours
   ; "Returns neighbour coords of row/col"
   (memoize
    (fn
 	 [height width [row col]]
-	 (p :neighbours
 		(let [bounded? (fn [h w [r c]] (and (< -1 r h) (< -1 c w)))
 			  coords #{[(dec row) col] [(inc row) col] [row (dec col)] [row (inc col)]}]
 		  (filter #(bounded? height width %) coords)
-		  )))))
+		  ))))
 
 
 (defn unvisited-neighbours
   [tree node]
-  (p :unvisited-neighbours
 	 (let [height (count (:rows tree))
 		   width (count (first (:rows tree)))]
 	   (intersection (set (neighbours height width node)) (:unvisited tree))
-	   )))
+	   ))
 
 
 (defn update-costs
@@ -34,39 +28,33 @@
   (if (seq score-map)
 	(let [[[row col] cost] (first score-map)]
 	  (recur
-	   (p :update-costs-recur (assoc-in tree [:costs row col] cost))
+	   (assoc-in tree [:costs row col] cost)
 	   (rest score-map)))
 	tree))
 
 
 (defn cheapest
   [tree nodes]
-  (p :cheapest-node
 	 (let [cost-map (zipmap nodes (map #(get-in (:costs tree) %) nodes))
 		   f #(if (< (val %1) (val %2)) %1 %2)
 		   best (first (reduce f cost-map))]
 	   (first (filter #(= best %) nodes))
-	   )))
+	   ))
 
 
 (defn process-one
   [tree]
-  (p :process-one
 	 (let [get-value (fn [tree [row col]] (get-in tree [:rows row col]))
 		   get-cost (fn [tree [row col]] (get-in tree [:costs row col]))
-		   candidates (:to-visit tree)
-		   node (cheapest tree candidates)
+		   node (cheapest tree (:to-visit tree))
 		   neighbs (unvisited-neighbours tree node)
-		   f #(min (get-cost tree %) (+ (get-cost tree node) (get-value tree %)))
-		   new-scores (map f neighbs)
-		   ]
+		   f #(min (get-cost tree %) (+ (get-cost tree node) (get-value tree %)))]
 	   (-> tree
-		   (update-costs (zipmap neighbs new-scores))
-		   (update-in [:visited] #(union % (set [node])))
-		   (update-in [:to-visit] #(difference % (set [node])))
-		   (update-in [:to-visit] #(union % (set neighbs)))
+		   (update-costs (zipmap neighbs (map f neighbs)))
+		   (update-in [:visited] #(union % #{node}))
+		   (update-in [:to-visit] #(difference (union % neighbs) #{node}))
 		   (update-in [:unvisited] #(difference % (union #{node} neighbs)))
-		   ))))
+		   )))
 
 
 (defn process
@@ -107,7 +95,7 @@
 
 (defn main [] (-> tree80 process :costs last last))
 
-(profile :info :Arithmetic (main))
+(main)
 
 ; 45 -> 225615
 ; 50 -> 254220
