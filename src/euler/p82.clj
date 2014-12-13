@@ -39,24 +39,6 @@
 	tree))
 
 
-(defn mark-nodes
-  "Return tree with nodes (as coords) marked as 'category'."
-  [tree nodes category]
-  (if (seq nodes)
-	(recur
-	 (p :mark-nodes-recur (update-in tree [category] #(conj % (first nodes))))
-	 (rest nodes)
-	 category)
-	tree))
-
-
-(defn remove-nodes
-  [tree nodes category]
-  (p :remove-nodes
-	 (update-in tree [category] #(difference % (set nodes)))
-	 ))
-
-
 (defn cheapest
   [tree nodes]
   (p :cheapest-node
@@ -80,10 +62,10 @@
 		   ]
 	   (-> tree
 		   (update-costs (zipmap neighbs new-scores))
-		   (mark-nodes [node] :visited)
-		   (remove-nodes [node] :to-visit)
-		   (mark-nodes neighbs :to-visit)
-		   (remove-nodes (union #{node} neighbs) :unvisited)
+		   (update-in [:visited] #(union % (set [node])))
+		   (update-in [:to-visit] #(difference % (set [node])))
+		   (update-in [:to-visit] #(union % (set neighbs)))
+		   (update-in [:unvisited] #(difference % (union #{node} neighbs)))
 		   ))))
 
 
