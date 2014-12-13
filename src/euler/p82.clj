@@ -104,11 +104,11 @@
   [tree]
   (p :process-one
 	 (let [value (fn [tree [row col]] (get-in tree [:rows row col]))
-		   f (partial get-cost tree)
 		   candidates (:to-visit tree)
 		   node (cheapest tree candidates)
 		   neighbs (unvisited-neighbours tree node)
-		   new-scores (map #(min (f %) (+ (f node) (value tree %))) neighbs)
+		   f #(min (get-cost tree %) (+ (get-cost tree node) (value tree %)))
+		   new-scores (map f neighbs)
 		   ]
 	   (-> tree
 		   (update-costs (zipmap neighbs new-scores))
