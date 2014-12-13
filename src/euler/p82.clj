@@ -50,17 +50,10 @@
 	tree))
 
 
-(defn remove-to-visit
-  "Remove node from to-visit list."
-  [tree node]
-  (p :remove-to-visit
-	 (update-in tree [:to-visit] #(difference % (set [node])))))
-
-
-(defn remove-unvisited
-  [tree nodes]
-  (p :remove-unvisited
-	 (assoc tree :unvisited (difference (:unvisited tree) nodes))
+(defn remove-nodes
+  [tree nodes category]
+  (p :remove-nodes
+	 (update-in tree [category] #(difference % (set nodes)))
 	 ))
 
 
@@ -88,9 +81,9 @@
 	   (-> tree
 		   (update-costs (zipmap neighbs new-scores))
 		   (mark-nodes [node] :visited)
-		   (remove-to-visit node)
+		   (remove-nodes [node] :to-visit)
 		   (mark-nodes neighbs :to-visit)
-		   (remove-unvisited (union #{node} neighbs))
+		   (remove-nodes (union #{node} neighbs) :unvisited)
 		   ))))
 
 
