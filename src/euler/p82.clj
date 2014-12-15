@@ -2,28 +2,12 @@
   (:require [clojure.set :refer [union intersection difference]]))
 
 
-(def neighbours
-  ; "Returns neighbour coords of row/col"
-  (memoize
-   (fn
-	 [height width [row col]]
-	 (let [bounded? (fn [h w [r c]] (and (< -1 r h) (< -1 c w)))
-		   coords #{
-					[(dec row) col]
-					[(inc row) col]
-					;[row (dec col)]
-					[row (inc col)]
-					}]
-	   (filter #(bounded? height width %) coords)
-	   ))))
-
-
 (defn unvisited-neighbours
   "Returns nodes that are unvisited neighbours of supplied node."
-  [tree node]
+  [tree node neighb-fn]
   (let [height (count (:rows tree))
 		width (count (first (:rows tree)))]
-	(intersection (set (neighbours height width node)) (:unvisited tree))
+	(intersection (set (neighb-fn height width node)) (:unvisited tree))
 	))
 
 
@@ -53,11 +37,11 @@
   "Run a single pass on the tree using a variant of Dijkstra's algorithm.
   Find lowest cost node to visit, calculate cost of its neighbours,
   attach that cost to nodes."
-  [tree]
+  [neighb-fn tree]
   (let [get-value (fn [tree [row col]] (get-in tree [:rows row col]))
 		get-cost (fn [tree [row col]] (get-in tree [:costs row col]))
 		node (cheapest tree (:to-visit tree))
-		neighbs (unvisited-neighbours tree node)
+		neighbs (unvisited-neighbours tree node neighb-fn)
 		f #(min (get-cost tree %) (+ (get-cost tree node) (get-value tree %)))]
 	(-> tree
 		(update-costs (zipmap neighbs (map f neighbs)))
@@ -69,10 +53,10 @@
 
 (defn dijkstra-process
   "Run full cost calculation using Dijkstra's algorithm."
-  [tree]
+  [neighb-fn tree]
   (if (empty? (:unvisited tree))
 	tree
-	(recur (dijkstra-single tree))
+	(recur neighb-fn (dijkstra-single neighb-fn tree))
 	))
 
 
@@ -95,6 +79,18 @@
 	 )))
 
 
+; neighbours fn is separate to allow for different rules, e.g. not left, all dirs, etc.
+(def neighbours
+  ; "Returns right/up/down neighbour coords of row/col, but not left"
+  (memoize
+   (fn
+	 [height width [row col]]
+	 (let [bounded? (fn [h w [r c]] (and (< -1 r h) (< -1 c w)))
+		   coords #{[(dec row) col] [(inc row) col] [row (inc col)]}]
+	   (filter #(bounded? height width %) coords)
+	   ))))
+
+
 (defn solve
   [data]
   (apply
@@ -102,7 +98,7 @@
    (for [row (range (count data))]
 	 (->> data
 		  (matrix->tree [row 0])
-		  dijkstra-process
+		  (dijkstra-process neighbours)
 		  :costs
 		  (map last)
 		  (apply min)
@@ -111,11 +107,11 @@
 
 (defn p82
   []
-  (->>
-   "https://projecteuler.net/project/resources/p082_matrix.txt"
-   slurp
-   (re-seq #"\d+")
-   (map #(Integer/parseInt %))
-   (partition 80)
-   solve
-   ))
+  (->> "https://projecteuler.net/project/resources/p082_matrix.txt"
+	   slurp
+	   (re-seq #"\d+")
+	   (map #(Integer/parseInt %))
+	   (partition 80)
+	   solve
+	   ))
+
