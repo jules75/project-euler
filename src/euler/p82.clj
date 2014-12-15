@@ -2,23 +2,34 @@
   (:require [clojure.set :refer [union intersection difference]]))
 
 
+(require '[taoensso.timbre.profiling :refer (profile p)])
+
+
 (def neighbours
   ; "Returns neighbour coords of row/col"
   (memoize
    (fn
 	 [height width [row col]]
+	 (p :neighbours
 		(let [bounded? (fn [h w [r c]] (and (< -1 r h) (< -1 c w)))
-			  coords #{[(dec row) col] [(inc row) col] [row (dec col)] [row (inc col)]}]
+			  coords #{
+					   [(dec row) col]
+					   [(inc row) col]
+					   ;[row (dec col)]
+					   [row (inc col)]
+					   }]
 		  (filter #(bounded? height width %) coords)
-		  ))))
+		  )))))
 
 
 (defn unvisited-neighbours
+  "Returns nodes that are unvisited neighbours of supplied node."
   [tree node]
+  (p :unvisited-neighbours
 	 (let [height (count (:rows tree))
 		   width (count (first (:rows tree)))]
 	   (intersection (set (neighbours height width node)) (:unvisited tree))
-	   ))
+	   )))
 
 
 (defn update-costs
@@ -34,16 +45,19 @@
 
 
 (defn cheapest
+  "Returns node with lowest cost from given nodes."
   [tree nodes]
+  (p :cheapest
 	 (let [cost-map (zipmap nodes (map #(get-in (:costs tree) %) nodes))
 		   f #(if (< (val %1) (val %2)) %1 %2)
 		   best (first (reduce f cost-map))]
 	   (first (filter #(= best %) nodes))
-	   ))
+	   )))
 
 
 (defn process-one
   [tree]
+  (p :process-one
 	 (let [get-value (fn [tree [row col]] (get-in tree [:rows row col]))
 		   get-cost (fn [tree [row col]] (get-in tree [:costs row col]))
 		   node (cheapest tree (:to-visit tree))
@@ -54,7 +68,7 @@
 		   (update-in [:visited] #(union % #{node}))
 		   (update-in [:to-visit] #(difference (union % neighbs) #{node}))
 		   (update-in [:unvisited] #(difference % (union #{node} neighbs)))
-		   )))
+		   ))))
 
 
 (defn process
@@ -68,37 +82,53 @@
 (defn matrix->tree
   "Returns cost tree representation of matrix, assumes top
   left cell as origin."
-  [matrix]
+  [origin matrix]
   (let [h (count matrix)
 		w (count (first matrix))
+		vrows (vec (map vec matrix))
+		[r c] origin
 		all-nodes (set (for [a (range h) b (range w)] [a b]))]
 	(->
-	 {:rows (vec (map vec matrix))
-	  :to-visit #{[0 0]}
+	 {:rows vrows
+	  :to-visit #{origin}
 	  :visited #{}
 	  :costs (vec (repeat h (vec (repeat w Double/POSITIVE_INFINITY))))}
-	 (assoc-in [:costs 0 0] (-> matrix first first))
-	 (assoc :unvisited (difference all-nodes #{[0 0]}))
+	 (assoc-in [:costs r c] (get-in vrows [r c]))
+	 (assoc :unvisited (difference all-nodes #{origin}))
 	 )))
 
 
-#_(def tree80
-	(->>
-	 "https://projecteuler.net/project/resources/p082_matrix.txt"
-	 slurp
-	 (re-seq #"\d+")
-	 (map #(Integer/parseInt %))
-	 (partition 80)
-	 matrix->tree
-	 ))
+(def data80
+  (->>
+   "https://projecteuler.net/project/resources/p082_matrix.txt"
+   slurp
+   (re-seq #"\d+")
+   (map #(Integer/parseInt %))
+   (partition 80)
+   ))
 
 
-(defn main [] (-> tree80 process :costs last last))
+(def data2
+  [[131 673 234 103 18]
+   [201 96 342 965 150]
+   [630 803 746 422 111]
+   [537 699 497 121 956]
+   [805 732 524 37 331]])
 
-(main)
 
-; 45 -> 225615
-; 50 -> 254220
-; 60 -> 300190
-; 70 -> 368598
-; 80 -> 425185
+(defn solve
+  [data]
+  (apply min
+		 (for [row (range (count data))]
+		   (->> data
+				(matrix->tree [row 0])
+				process
+				:costs
+				(map last)
+				(apply min)
+				)
+		   )))
+
+
+(profile :info :Arithmetic (time (solve data80)))
+
