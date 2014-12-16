@@ -44,23 +44,32 @@
   (p :sums-equal
 	 (let [sums (map #(apply + %) coll)
 		   m (first sums)]
-	   (every? true? (map #(= m %) sums))
+	   (every? true? (map #(= m %) (rest sums)))
 	 )))
+
+
+(defn external-ten?
+  "True if one of the external points on 5-gon is a ten."
+  [coll]
+  (p :external-ten?
+  (some #{10} (map (partial nth coll) [0 3 5 7 9]))))
 
 
 (defn p68
   []
   (->>
    (c/permutations (range 1 11)) 			; all possible 1-10 permutations
+   (filter external-ten?) 					; ignore if ten is internal (makes 17 digits)
    (map to-5-gon) 							; turn into 5-gon structures
    (filter sums-equal?) 					; satisfy 'magic' requirement
    (map min-rotate) 						; satisfy 'lowest external node first'
    (map (comp (partial apply str) flatten)) ; turn into string
-   (filter #(= 16 (count %))) 				; must be 16 digits
+   ;(filter #(= 16 (count %))) 				; must be 16 digits
    (map bigint) 							; turn back into numbers
    (reduce max) 							; find biggest
    ))
 
 
-(profile :info :Arithmetic (p68))
+;(profile :info :Arithmetic (p68))
 
+(time (p68))
