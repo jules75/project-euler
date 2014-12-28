@@ -6,7 +6,7 @@
 	(some zero? (map #(rem n %) coll)))
 
 (defmulti palindrome? class)
-	
+
 (defmethod palindrome? String
 	[s]
 	"True if string s is a palindrome"
@@ -16,14 +16,14 @@
 	[n]
 	"True if integer n is a palindrome"
 	(palindrome? (str n)))
-	
+
 (defn fibonacci
 	[]
 	"Returns infinite terms of fibonacci series"
 	(->> [0 1]
 		(iterate #(vector (last %) (+' (first %) (last %))))
 		(map first)))
-		
+
 (defn factor	; TODO improve performance
 	([n m factors]
 	"Recursively test is m is factor of n, add to list of factors"
@@ -51,29 +51,29 @@
 	[]
 	"Returns infinite sequence of triangle numbers, i.e. 0 1 3 6 10 15 etc."
 	(->> (map #(/ (* % (dec %)) 2) (range)) rest))
-	
+
 (defn pentagonals
 	[]
 	"Returns infinite sequence of pentagonal numbers, i.e. 0 1 5 12 22 35 etc."
 	(map #(-> % (* 3) dec (* %) (/ 2)) (range)))
-	
+
 (defn untriangle	; TODO can we replace with triangle? predicate fn?
 	[n]
 	"Returns reverse of triangle number, i.e.
 		1->2 3->3 6->4 10->5 15->6 etc.
 	If result is whole, n is a triangle number"
 	(->> n (* 8) inc (Math/sqrt) dec (* 0.5)))
-	
+
 (defn triangle?
 	[n]
 	"True if n is triangle number"
 	(-> n (* 8) inc (Math/sqrt) dec (/ 2) (rem 1) zero?))
-	
-(defn pentagonal? 
-	[n] 
+
+(defn pentagonal?
+	[n]
 	"True if n is pentagonal number"
 	(-> n (* 24) inc (Math/sqrt) inc (/ 6) (rem 1) zero?))
-	
+
 (defn hexagonal?
 	[n]
 	"True if n is hexagonal number"
@@ -88,7 +88,7 @@
 		(map #(vector % (/ n %)))
 		flatten
 		set
-		(cons 1))))	
+		(cons 1))))
 
 (defn count-divisors
 	[n]
@@ -99,9 +99,9 @@
 	[n]
 	"Sequence of digits in integer n"
 	(map #(- (int %) (int \0)) (str n)))
-	
-(defn undigits 
-	[coll] 
+
+(defn undigits
+	[coll]
 	"Turn digits into big int, e.g. [1 2 5 8 2] => 12582"
 	(if (seq coll) (bigint (apply str coll)) 0))
 
@@ -118,3 +118,13 @@
 	[n r]
 	"See calculatorsoup.com/calculators/discretemathematics/combinations.php"
 	(/ (factorial n) (*' (factorial r) (factorial (- n r)))))
+
+(defn gcd
+    "Greatest common denominator, Euclid's method"
+    [a b]
+    (cond
+        (> a b)     (recur (- a b) b)
+        (< a b)     (recur a (- b a))
+        :else       a
+        ))
+
